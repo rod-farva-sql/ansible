@@ -1,0 +1,9 @@
+---
+- name: Execute the ovpn_create script
+  hosts: all
+  remote_user: ansible
+  sudo: yes
+  tasks:
+      - name: Execute the script
+       command: sh /:/etc/openvpn/OVPN-Maker/ovpn-maker3.sh
+  
