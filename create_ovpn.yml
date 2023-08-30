@@ -1,3 +1,4 @@
+---
 - name: Execute the ovpn_create script
   hosts: all
   remote_user: ansible
