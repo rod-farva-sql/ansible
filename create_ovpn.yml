@@ -4,5 +4,5 @@
   sudo: yes
   tasks:
       - name: Execute the script
-       command: sh /etc/openvpn/OVPN-Maker/ovpn-maker3.sh
+        command: sh /etc/openvpn/OVPN-Maker/ovpn-maker3.sh
   
