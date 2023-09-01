@@ -8,7 +8,7 @@
 
     - name: Write File to Vault
       community.hashi_vault.vault_write:
-        secret: secret/mysecret
+        secret: secret/users/jcrawford/eng/openvpn
         data:
           file_content: "{{ file_content }}"
         token: "{{ vault_token }}"
