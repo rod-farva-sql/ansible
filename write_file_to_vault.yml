@@ -1,0 +1,14 @@
+---
+- name: Write File to HashiCorp Vault
+  hosts: localhost
+  tasks:
+    - name: Create File Content
+      set_fact:
+        file_content: "This is the content of my secret file."
+
+    - name: Write File to Vault
+      community.hashi_vault.vault_write:
+        secret: secret/mysecret
+        data:
+          file_content: "{{ file_content }}"
+        token: "{{ vault_token }}"
