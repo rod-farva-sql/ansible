@@ -3,5 +3,5 @@
   become: yes
   tasks:
       - name: Execute the script
-        command: /etc/openvpn/OVPN-Maker/ovpn-maker3.sh heman
+        command: /etc/openvpn/OVPN-Maker/ovpn-maker3.sh {{ vpn_userid }}
   
