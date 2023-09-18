@@ -3,7 +3,7 @@
   become: yes
   tasks:
       - name: Execute the script
-        command: "python3 /etc/openvpn/EasyRSA/getting_close2.py {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
+        shell: "python3 /etc/openvpn/EasyRSA/getting_close2.py {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
         vars:
           username:
           is_mobile:
