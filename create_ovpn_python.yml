@@ -11,6 +11,6 @@
         register: script_output
       
    # You can also use script_output if you need to handle the script's output in the playbook
-     - name: Debug script output
-       debug:
-         var: script_output.stdout
+      - name: Debug script output
+        debug:
+          var: script_output.stdout
