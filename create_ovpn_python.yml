@@ -13,4 +13,7 @@
    # You can also use script_output if you need to handle the script's output in the playbook
       - name: Debug script output
         debug:
-          var: script_output.stdout
+          msg:"username: {{ username }}"
+          msg:"is_mobile: {{ is_mobile }}"
+          msg:"send_slack_message: {{ send_slack_message }}"
+          
