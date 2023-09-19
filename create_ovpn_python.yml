@@ -1,19 +1,12 @@
+---
 - name: Execute the ovpn_create script
   hosts: all
   become: yes
   tasks:
       - name: Execute the script
-        command: "python3 /etc/openvpn/EasyRSA/getting_close2.py"
-        vars:
-          username: "{{ username }}"
-          is_mobile: "{{ is_mobile }}"
-          send_slack_message: "{{ send_slack_message }}"
+        command: "python3 /etc/openvpn/EasyRSA/getting_close2.py {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
         register: script_output
-      
-   # You can also use script_output if you need to handle the script's output in the playbook
+
       - name: Debug script output
         debug:
-          msg: "username: {{ username }}"
-          msg: "is_mobile: {{ is_mobile }}"
-          msg: "send_slack_message: {{ send_slack_message }}"
-          
+          var: script_output.stdout
