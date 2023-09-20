@@ -9,6 +9,6 @@
           chdir: /etc/openvpn/EasyRSA
         register: script_output
 
-      - name: current env
+      - name: Debug script output
         debug:
-          msg: "{{ lookup('env', 'PWD') }}"
+          var: script_output.stdout
