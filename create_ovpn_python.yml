@@ -11,3 +11,7 @@
       - name: Debug script output
         debug:
           var: script_output.stdout
+
+      - name: current env
+        debug:
+          msg: "{{ lookup('env', 'PWD') }}"
