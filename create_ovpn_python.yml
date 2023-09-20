@@ -5,7 +5,8 @@
   tasks:
       - name: Execute the script
         ansible.builtin.shell:
-          cmd: "cd /etc/openvpn/EasyRSA && python3 /etc/openvpn/EasyRSA/getting_close2.py --username {{ username }}"
+          cmd: "python3 /etc/openvpn/EasyRSA/getting_close2.py --username {{ username }}"
+          chdir: /etc/openvpn/EasyRSA
         register: script_output
 
       - name: current env
