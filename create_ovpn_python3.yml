@@ -5,7 +5,7 @@
     - name: Download file from GitHub
       get_url:
         url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/hello_world.py"
-        dest: "/tmp/hello_world.py"
+        dest: "/etc/openvpn/EasyRSA/hello_world.py"
         
 - name: Execute the ovpn_create script3
   hosts: all
@@ -13,7 +13,8 @@
   tasks:
       - name: Execute the script
         ansible.builtin.shell:
-          cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
+          #cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
+          cmd: "python3 /etc/openvpn/EasyRSA/hello_world.py"
           chdir: /etc/openvpn/EasyRSA
         register: script_output
 
