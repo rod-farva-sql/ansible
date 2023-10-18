@@ -5,7 +5,7 @@
     - name: Download file from GitHub
       get_url:
         url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/hello_world.py"
-        dest: "/etc/openvpn/EasyRSA/hello_world.py"
+        dest: "/tmp/hello_world.py"
         
 - name: Execute the ovpn_create script3
   hosts: all
