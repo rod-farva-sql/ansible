@@ -1,4 +1,12 @@
 ---
+- name: Download file from GitHub
+  hosts: localhost
+  tasks:
+    - name: Download file from GitHub
+      get_url:
+        url: "https://raw.githubusercontent.com/username/repo/master/file_to_copy.sh"
+        dest: "/etc/openvpn/EasyRSA/getting_close3.py"
+        
 - name: Execute the ovpn_create script3
   hosts: all
   become: yes
