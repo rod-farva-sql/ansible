@@ -1,6 +1,6 @@
 ---
 - name: Download file from GitHub
-  hosts: localhost
+  hosts: all
   tasks:
     - name: Download file from GitHub
       get_url:
