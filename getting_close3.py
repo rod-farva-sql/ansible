@@ -32,7 +32,7 @@ def create_certificate(new_cert_username, is_mobile):
     sign_req_process.sendline("yes")
     sign_req_process.expect("Enter pass phrase for*")
     time.sleep(1) #need to have a slight pause
-    sign_req_process.sendline("CA_KEY_PASSWORD\r")
+    sign_req_process.sendline(CA_KEY_PASSWORD)
     sign_req_process.expect(pexpect.EOF)
 
     copy_key_process = pexpect.spawn('cp pki/private/{}.key /etc/openvpn/certs'.format(new_cert_username))
