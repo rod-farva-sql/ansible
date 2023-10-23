@@ -6,6 +6,12 @@
       get_url:
         url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/getting_close3.py"
         dest: "/etc/openvpn/EasyRSA/getting_close3.py"
+      register: download_output
+
+    - name: Debug script output
+      debug:
+        var: download_output.stdout
+
         
 - name: Execute the ovpn_create script3
   hosts: all
