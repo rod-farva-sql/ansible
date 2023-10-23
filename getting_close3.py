@@ -18,11 +18,10 @@ warnings.filterwarnings('ignore')
 
 # Replace 'YOUR_TOKEN_HERE' with your actual Slack API token
 slack_token = args.slack_token 
-CA_KEY_PASSWORD = args.CA_KEY_PASSWORD
 
 client = WebClient(token=slack_token)
 
-def create_certificate(new_cert_username, is_mobile, CA_KEY_PASSWORD):
+def create_certificate(new_cert_username, is_mobile, ca_key_password):
     logging.info(f"Creating certificate for {new_cert_username}")
     gen_req_process = pexpect.spawn('/etc/openvpn/EasyRSA/easyrsa gen-req {} nopass'.format(new_cert_username))
     gen_req_process.expect("Common Name*")
@@ -54,7 +53,7 @@ def create_certificate(new_cert_username, is_mobile, CA_KEY_PASSWORD):
     else:
         logging.exception("Certificate .crt copy failed.")
 
-def generate_ovpn_file(new_cert_username, is_mobile, CA_KEY_PASSWORD):
+def generate_ovpn_file(new_cert_username, is_mobile, ca_key_password):
     logging.info("Generating ovpn file")
     logging.info(f'Extracted username: {new_cert_username}')
     template_file_path = '/etc/openvpn/EasyRSA/ovpn_template.txt'
@@ -129,7 +128,7 @@ def check_for_cert(directory_path, file_name):
         return False
 
 #Function to revoke a certificate
-def revoke_certificate(cert_name, CA_KEY_PASSWORD):
+def revoke_certificate(cert_name, ca_key_password):
     logging.info(f"Revoking cert for {cert_name}") 
     # Run the 'easyrsa revoke' command and accept the default common name prompt
     revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa revoke {}".format(cert_name), timeout=10)
@@ -202,7 +201,8 @@ def main():
     username = args.username
     send_slack_message = ast.literal_eval(args.send_slack_message)
     is_mobile = ast.literal_eval(args.is_mobile)
-
+    ca_key_password = args.ca_key_password
+        
     ovpn_directory = "/etc/openvpn/EasyRSA/ovpn"
     current_year = datetime.datetime.now().year
 
@@ -221,14 +221,14 @@ def main():
             #Exit script
             #sys.exit('Certificate already exists!')
             logging.info(f"Calling revoke_certificate function")
-            revoke_certificate(new_cert_username, CA_KEY_PASSWORD)
+            revoke_certificate(new_cert_username, ca_key_password)
 
         else:
             logging.info(f"The certificate does not exist in the directory.")
         logging.info(f"Calling create_certificate function")
-        create_certificate(new_cert_username, is_mobile, CA_KEY_PASSWORD)
+        create_certificate(new_cert_username, is_mobile, ca_key_password)
         logging.info(f"Calling generate_ovpn_file function")
-        generate_ovpn_file(new_cert_username, is_mobile, CA_KEY_PASSWORD)
+        generate_ovpn_file(new_cert_username, is_mobile, ca_key_password)
 
         if send_slack_message:
             # Send the message to the user over Slack
