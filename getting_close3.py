@@ -196,7 +196,7 @@ def main():
     logging.info(f"args.slack {args.send_slack_message}")
     logging.info(f"args.mobile {args.is_mobile}")
     logging.info(f"args.slack_token {args.slack_token}")
-    logging.info(f"args.CA_KEY_PASSWORD {args.CA_KEY_PASSWORD}")
+    logging.info(f"args.ca_key_password {args.ca_key_password}")
 
     username = args.username
     send_slack_message = ast.literal_eval(args.send_slack_message)
