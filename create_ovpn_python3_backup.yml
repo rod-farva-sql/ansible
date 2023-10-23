@@ -1,0 +1,29 @@
+---
+- name: Download file from GitHub
+  hosts: all
+  tasks:
+    - name: Download file from GitHub
+      get_url:
+        url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/getting_close3.py"
+        dest: "/etc/openvpn/EasyRSA/getting_close3.py"
+      register: download_output
+
+    - name: Debug script output
+      debug:
+        var: download_output.stdout
+
+        
+- name: Execute the ovpn_create script3
+  hosts: all
+  become: yes
+  tasks:
+      - name: Execute the script
+        ansible.builtin.shell:
+          #cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
+          cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }} --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
+          chdir: /etc/openvpn/EasyRSA
+        register: script_output
+
+      - name: Debug script output
+        debug:
+          var: script_output.stdout
