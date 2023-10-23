@@ -15,10 +15,6 @@ import ast
 
 warnings.filterwarnings('ignore')
 
-
-# Replace 'YOUR_TOKEN_HERE' with your actual Slack API token
-slack_token = args.slack_token 
-
 client = WebClient(token=slack_token)
 
 def create_certificate(new_cert_username, is_mobile, ca_key_password):
@@ -202,7 +198,10 @@ def main():
     send_slack_message = ast.literal_eval(args.send_slack_message)
     is_mobile = ast.literal_eval(args.is_mobile)
     ca_key_password = args.ca_key_password
-        
+
+    # Replace 'YOUR_TOKEN_HERE' with your actual Slack API token
+    slack_token = args.slack_token 
+    
     ovpn_directory = "/etc/openvpn/EasyRSA/ovpn"
     current_year = datetime.datetime.now().year
 
