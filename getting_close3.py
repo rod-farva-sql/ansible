@@ -18,6 +18,7 @@ warnings.filterwarnings('ignore')
 
 # Replace 'YOUR_TOKEN_HERE' with your actual Slack API token
 slack_token = args.slack_token 
+CA_KEY_PASSWORD = args.CA_KEY_PASSWORD
 
 client = WebClient(token=slack_token)
 
