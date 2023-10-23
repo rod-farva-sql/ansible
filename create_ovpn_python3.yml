@@ -1,8 +1,8 @@
 ---
-- name: Download file from GitHub
+- name: Copy file from local git repository on ansible server 
   hosts: all
   tasks:
-    - name: Copy file from local git repository to server
+    - name: Copy file
       copy:
         src: "getting_close3.py"
         dest: "/etc/openvpn/EasyRSA/getting_close3.py"
@@ -10,7 +10,7 @@
 
     - name: Debug script output
       debug:
-        var: download_output.stdout
+        var: download_output
 
         
 - name: Execute the ovpn_create script3
@@ -26,4 +26,4 @@
 
       - name: Debug script output
         debug:
-          var: script_output.stdout
+          var: script_output
