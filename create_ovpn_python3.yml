@@ -1,5 +1,5 @@
 ---
-- name: Copy file from local git repository on ansible server 
+- name: Copy file from local git repository on ansible server to ovpn server
   hosts: all
   tasks:
     - name: Copy file
