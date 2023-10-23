@@ -28,7 +28,7 @@ def create_certificate(new_cert_username, is_mobile, ca_key_password):
     sign_req_process.sendline("yes")
     sign_req_process.expect("Enter pass phrase for*")
     time.sleep(1) #need to have a slight pause
-    sign_req_process.sendline(CA_KEY_PASSWORD)
+    sign_req_process.sendline(ca_key_password)
     sign_req_process.expect(pexpect.EOF)
 
     copy_key_process = pexpect.spawn('cp pki/private/{}.key /etc/openvpn/certs'.format(new_cert_username))
@@ -132,14 +132,14 @@ def revoke_certificate(cert_name, ca_key_password):
     revoke_process.sendline("yes")
     revoke_process.expect("Enter pass phrase for /etc/openvpn/EasyRSA/pki/private/ca.key:*")
     time.sleep(1) #need to have a slight pause or it will crash
-    revoke_process.sendline(CA_KEY_PASSWORD)
+    revoke_process.sendline(ca_key_password)
     revoke_process.expect(pexpect.EOF)
 
     logging.info("Generating new CRL")
     revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa gen-crl", timeout=10)
     revoke_process.expect("Enter pass phrase for /etc/openvpn/EasyRSA/pki/private/ca.key:*")
     time.sleep(1)
-    revoke_process.sendline(CA_KEY_PASSWORD)
+    revoke_process.sendline(ca_key_password)
     revoke_process.expect(pexpect.EOF)
 
     # Move the CRL file
