@@ -14,7 +14,7 @@
       - name: Execute the script
         ansible.builtin.shell:
           #cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }}"
-          cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }} --slack_token {{ slack_token }} --CA_KEY_PASSWORD {{ CA_KEY_PASSWORD }}"
+          cmd: "python3 /etc/openvpn/EasyRSA/getting_close3.py --username {{ username }} --is_mobile {{ is_mobile }} --send_slack_message {{ send_slack_message }} --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
           chdir: /etc/openvpn/EasyRSA
         register: script_output
 
