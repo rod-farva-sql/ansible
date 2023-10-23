@@ -183,12 +183,20 @@ def main():
     # Add a send_slack_message argument
     parser.add_argument('--send_slack_message', type=str, help='Send a Slack message (True/False)', required=True)
 
+    # Add a CA_KEY_PASSWORD argument
+    parser.add_argument('--CA_KEY_PASSWORD', type=str, help='Provide the password for the CA key)', required=True)
+
+    # Add the slack token argument
+    parser.add_argument('--slack_token', type=str, help='Provide the slack token', required=True)
+
     # Parse the command-line arguments
     args = parser.parse_args()
     logging.info(f"--------------------------------------------")
     logging.info(f"args.username {args.username}")
     logging.info(f"args.slack {args.send_slack_message}")
     logging.info(f"args.mobile {args.is_mobile}")
+    logging.info(f"args.slack_token {args.slack_token}")
+    logging.info(f"args.CA_KEY_PASSWORD {args.CA_KEY_PASSWORD}")
 
     username = args.username
     send_slack_message = ast.literal_eval(args.send_slack_message)
