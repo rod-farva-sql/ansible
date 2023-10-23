@@ -180,7 +180,7 @@ def main():
     parser.add_argument('--send_slack_message', type=str, help='Send a Slack message (True/False)', required=True)
 
     # Add a CA_KEY_PASSWORD argument
-    parser.add_argument('--CA_KEY_PASSWORD', type=str, help='Provide the password for the CA key)', required=True)
+    parser.add_argument('--ca_key_password', type=str, help='Provide the password for the CA key)', required=True)
 
     # Add the slack token argument
     parser.add_argument('--slack_token', type=str, help='Provide the slack token', required=True)
