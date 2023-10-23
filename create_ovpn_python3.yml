@@ -2,9 +2,9 @@
 - name: Download file from GitHub
   hosts: all
   tasks:
-    - name: Download file from GitHub
-      get_url:
-        url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/getting_close3.py"
+    - name: Copy file from local git repository to server
+      copy:
+        src: "getting_close3.py"
         dest: "/etc/openvpn/EasyRSA/getting_close3.py"
       register: download_output
 
