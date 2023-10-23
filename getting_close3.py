@@ -17,11 +17,11 @@ warnings.filterwarnings('ignore')
 
 
 # Replace 'YOUR_TOKEN_HERE' with your actual Slack API token
-slack_token = 'YOUR_TOKEN_HERE' 
+slack_token = args.slack_token 
 
 client = WebClient(token=slack_token)
 
-def create_certificate(new_cert_username, is_mobile):
+def create_certificate(new_cert_username, is_mobile, CA_KEY_PASSWORD):
     logging.info(f"Creating certificate for {new_cert_username}")
     gen_req_process = pexpect.spawn('/etc/openvpn/EasyRSA/easyrsa gen-req {} nopass'.format(new_cert_username))
     gen_req_process.expect("Common Name*")
@@ -32,7 +32,7 @@ def create_certificate(new_cert_username, is_mobile):
     sign_req_process.sendline("yes")
     sign_req_process.expect("Enter pass phrase for*")
     time.sleep(1) #need to have a slight pause
-    sign_req_process.sendline(args.CA_KEY_PASSWORD)
+    sign_req_process.sendline(CA_KEY_PASSWORD)
     sign_req_process.expect(pexpect.EOF)
 
     copy_key_process = pexpect.spawn('cp pki/private/{}.key /etc/openvpn/certs'.format(new_cert_username))
@@ -53,7 +53,7 @@ def create_certificate(new_cert_username, is_mobile):
     else:
         logging.exception("Certificate .crt copy failed.")
 
-def generate_ovpn_file(new_cert_username, is_mobile):
+def generate_ovpn_file(new_cert_username, is_mobile, CA_KEY_PASSWORD):
     logging.info("Generating ovpn file")
     logging.info(f'Extracted username: {new_cert_username}')
     template_file_path = '/etc/openvpn/EasyRSA/ovpn_template.txt'
@@ -128,7 +128,7 @@ def check_for_cert(directory_path, file_name):
         return False
 
 #Function to revoke a certificate
-def revoke_certificate(cert_name):
+def revoke_certificate(cert_name, CA_KEY_PASSWORD):
     logging.info(f"Revoking cert for {cert_name}") 
     # Run the 'easyrsa revoke' command and accept the default common name prompt
     revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa revoke {}".format(cert_name), timeout=10)
@@ -136,14 +136,14 @@ def revoke_certificate(cert_name):
     revoke_process.sendline("yes")
     revoke_process.expect("Enter pass phrase for /etc/openvpn/EasyRSA/pki/private/ca.key:*")
     time.sleep(1) #need to have a slight pause or it will crash
-    revoke_process.sendline(args.CA_KEY_PASSWORD)
+    revoke_process.sendline(CA_KEY_PASSWORD)
     revoke_process.expect(pexpect.EOF)
 
     logging.info("Generating new CRL")
     revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa gen-crl", timeout=10)
     revoke_process.expect("Enter pass phrase for /etc/openvpn/EasyRSA/pki/private/ca.key:*")
     time.sleep(1)
-    revoke_process.sendline(args.CA_KEY_PASSWORD)
+    revoke_process.sendline(CA_KEY_PASSWORD)
     revoke_process.expect(pexpect.EOF)
 
     # Move the CRL file
@@ -220,14 +220,14 @@ def main():
             #Exit script
             #sys.exit('Certificate already exists!')
             logging.info(f"Calling revoke_certificate function")
-            revoke_certificate(new_cert_username)
+            revoke_certificate(new_cert_username, CA_KEY_PASSWORD)
 
         else:
             logging.info(f"The certificate does not exist in the directory.")
         logging.info(f"Calling create_certificate function")
-        create_certificate(new_cert_username, is_mobile)
+        create_certificate(new_cert_username, is_mobile, CA_KEY_PASSWORD)
         logging.info(f"Calling generate_ovpn_file function")
-        generate_ovpn_file(new_cert_username, is_mobile)
+        generate_ovpn_file(new_cert_username, is_mobile, CA_KEY_PASSWORD)
 
         if send_slack_message:
             # Send the message to the user over Slack
