@@ -219,6 +219,7 @@ def main():
 
     # Slack API token for OVPN Bot provided by --slack_token argument which is provided from ansible credential
     slack_token = args.slack_token
+    client = WebClient(token=slack_token)
 
     #We want to log all renewals to the Slack #devops channel
     devops_channel_id = "C8QPUH63S"
