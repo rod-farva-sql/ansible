@@ -194,7 +194,7 @@ def main():
     parser.add_argument('--slack_token', type=str, help='Provide the slack token', required=True)
 
     # Configure logging settings
-    log_filename = '/var/log/openvpn/openvpnbot2.log'
+    log_filename = '/var/log/openvpn/renew_ovpn_cert.log'
     logging.basicConfig(filename=log_filename,
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
