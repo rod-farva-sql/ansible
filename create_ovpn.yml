@@ -1,7 +1,0 @@
-- name: Execute the ovpn_create script
-  hosts: all
-  become: yes
-  tasks:
-      - name: Execute the script
-        command: /etc/openvpn/OVPN-Maker/ovpn-maker3.sh "{{ vpn_userid }}"
-  
