@@ -3,8 +3,8 @@
   hosts: all
   tasks:
     - name: Download file from GitHub
-      get_url:
-        url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/renew_ovpn_cert.py"
+      copy:
+        src: "renew_ovpn_cert.py"
         dest: "/etc/openvpn/EasyRSA/renew_ovpn_cert.py"
       register: download_output
 
