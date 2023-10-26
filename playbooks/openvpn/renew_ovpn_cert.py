@@ -222,7 +222,7 @@ def main():
     client = WebClient(token=slack_token)
 
     #We want to log all renewals to the Slack #devops channel
-    devops_channel_id = "C062W8HQ5RT"
+    devops_channel_id = "C063P708JRE"
 
 
     #Lets begin by looping through all the certs to see how old they are and to look for any that are going to expire in X days (X being "days_threshold")
