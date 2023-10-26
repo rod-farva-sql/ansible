@@ -3,8 +3,8 @@
   hosts: all
   tasks:
     - name: Download file from GitHub
-      get_url:
-        url: "revoke_ovpn_cert.py"
+      copy:
+        src: "revoke_ovpn_cert.py"
         dest: "/etc/openvpn/EasyRSA/revoke_ovpn_cert.py"
       register: download_output
 
