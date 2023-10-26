@@ -91,6 +91,8 @@ def main():
     #We want to log all renewals to the Slack #devops channel
     devops_channel_id = "C8QPUH63S"
 
+    username = args.username
+    
     try:
         #Call the revoke_user function to revoke certificate
         revoke_user(username)
