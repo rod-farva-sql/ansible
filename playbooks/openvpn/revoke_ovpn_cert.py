@@ -92,6 +92,7 @@ def main():
     devops_channel_id = "C8QPUH63S"
 
     username = args.username
+    ca_key_password = args.ca_key_password
     
     try:
         #Call the revoke_user function to revoke certificate
