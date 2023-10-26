@@ -98,8 +98,8 @@ def main():
         #Call the revoke_user function to revoke certificate
         revoke_user(username, ca_key_password)
         #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
-        devops_channel_message = (f"Certificate " + ovpn_filename + " sent to " + username)
-        logging.info("Sending \"Certificate sent to user\" message to devops")
+        devops_channel_message = (f"Certificate revoked for " + username)
+        logging.info("Sending \"Certificate revoked for user\" message to devops")
         #send_message(client, devops_channel_id, devops_channel_message)
     except SlackApiError as e:
         error_message = e.response['error']
