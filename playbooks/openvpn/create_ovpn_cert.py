@@ -151,7 +151,7 @@ def main():
     certs_directory = "/etc/openvpn/EasyRSA/pki/issued"
 
     # Configure logging settings
-    log_filename = '/var/log/openvpn/openvpnbot2.log'
+    log_filename = '/var/log/openvpn/create_ovpn_cert.log'
     logging.basicConfig(filename=log_filename,
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
