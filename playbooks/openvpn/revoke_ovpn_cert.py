@@ -103,14 +103,14 @@ def main():
         #send_message(client, devops_channel_id, devops_channel_message)
     except SlackApiError as e:
         error_message = e.response['error']
-        logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
-        devops_channel_message = (f"Error: Could not renew certificate for " + filename)
-        logging.info("Sending \"Could not renew certificate\" message to \#devops")
+        logging.exception(f"Failed: {error_message}")
+        devops_channel_message = (f"Error: Could not revoke certificate for " + username)
+        logging.info("Sending \"Could not revoke certificate\" message to \#devops")
         send_message(client, devops_channel_id, devops_channel_message)
     else:
-        logging.exception("No user_id found for " + user_email)
-        devops_channel_message = (f"Error: Could not find user_id for " + username)
-        logging.info("Sending \"Could not find user_id\" message to \#devops")
+        logging.exception("Error: Could not revoke certificate for " + username)
+        devops_channel_message = (f"Error: Could not revoke certificate for " + username)
+        logging.info("Sending \"Error: Could not revoke certificate for \" message to \#devops")
         send_message(client, devops_channel_id, devops_channel_message)
 
 
