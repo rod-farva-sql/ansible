@@ -4,7 +4,7 @@
   tasks:
     - name: Download file from GitHub
       get_url:
-        url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/main/revoke_ovpn_cert.py"
+        url: "revoke_ovpn_cert.py"
         dest: "/etc/openvpn/EasyRSA/revoke_ovpn_cert.py"
       register: download_output
 
@@ -19,7 +19,7 @@
   tasks:
       - name: Execute the script
         ansible.builtin.shell:
-          cmd: "python3 /etc/openvpn/EasyRSA/revoke_ovpn_cert.py --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
+          cmd: "python3 /etc/openvpn/EasyRSA/revoke_ovpn_cert.py --username {{ username }} --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
           chdir: /etc/openvpn/EasyRSA
         register: script_output
 
