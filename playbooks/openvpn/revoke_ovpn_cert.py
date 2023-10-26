@@ -95,7 +95,7 @@ def main():
     
     try:
         #Call the revoke_user function to revoke certificate
-        revoke_user(username)
+        revoke_user(username, ca_key_password)
         #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
         devops_channel_message = (f"Certificate " + ovpn_filename + " sent to " + username)
         logging.info("Sending \"Certificate sent to user\" message to devops")
