@@ -86,24 +86,25 @@ def main():
     #We want to log all renewals to the Slack #devops channel
     devops_channel_id = "C8QPUH63S"
 
-                   try:
-                     #Call the revoke_user function to revoke certificate
-                     revoke_user(username)
-                     #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
-                     devops_channel_message = (f"Certificate " + ovpn_filename + " sent to " + username)
-                     logging.info("Sending \"Certificate sent to user\" message to devops")
-                     #send_message(client, devops_channel_id, devops_channel_message)
-                   except SlackApiError as e:
-                     error_message = e.response['error']
-                     logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
-                     devops_channel_message = (f"Error: Could not renew certificate for " + filename)
-                     logging.info("Sending \"Could not renew certificate\" message to \#devops")
-                     send_message(client, devops_channel_id, devops_channel_message)
-                else:
-                     logging.exception("No user_id found for " + user_email)
-                     devops_channel_message = (f"Error: Could not find user_id for " + username)
-                     logging.info("Sending \"Could not find user_id\" message to \#devops")
-                     send_message(client, devops_channel_id, devops_channel_message)
+    try:
+        #Call the revoke_user function to revoke certificate
+        revoke_user(username)
+        #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
+        devops_channel_message = (f"Certificate " + ovpn_filename + " sent to " + username)
+        logging.info("Sending \"Certificate sent to user\" message to devops")
+        #send_message(client, devops_channel_id, devops_channel_message)
+    except SlackApiError as e:
+        error_message = e.response['error']
+        logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
+        devops_channel_message = (f"Error: Could not renew certificate for " + filename)
+        logging.info("Sending \"Could not renew certificate\" message to \#devops")
+        send_message(client, devops_channel_id, devops_channel_message)
+    else:
+        logging.exception("No user_id found for " + user_email)
+        devops_channel_message = (f"Error: Could not find user_id for " + username)
+        logging.info("Sending \"Could not find user_id\" message to \#devops")
+        send_message(client, devops_channel_id, devops_channel_message)
+
 
 
 if __name__ == "__main__":
