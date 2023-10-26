@@ -55,6 +55,9 @@ def main():
     # Create an argument parser
     parser = argparse.ArgumentParser(description='OpenVPN Script')
 
+    # Add a username argument
+    parser.add_argument('--username', type=str, help='Provide the username)', required=True)
+
     # Add a ca_key_password argument
     parser.add_argument('--ca_key_password', type=str, help='Provide the password for the CA key)', required=True)
 
@@ -70,6 +73,7 @@ def main():
     # Parse the command-line arguments
     args = parser.parse_args()
     logging.info(f"--------------------------------------------")
+    logging.info(f"args.username {args.username}")
     logging.info(f"args.slack_token {args.slack_token}")
     logging.info(f"args.ca_key_password {args.ca_key_password}")
 
