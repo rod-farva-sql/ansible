@@ -108,13 +108,7 @@ def main():
         devops_channel_message = (f"Exception: Could not revoke certificate for " + username)
         logging.info("Sending \"Could not revoke certificate\" message to \#devops")
         send_message(client, devops_channel_id, devops_channel_message)
-    else:
-        logging.exception("Error: Could not revoke certificate for " + username)
-        devops_channel_message = (f"Error: Could not revoke certificate for " + username)
-        logging.info("Sending \"Error: Could not revoke certificate for \" message to \#devops")
-        send_message(client, devops_channel_id, devops_channel_message)
-
-
+   
 
 if __name__ == "__main__":
     main()
