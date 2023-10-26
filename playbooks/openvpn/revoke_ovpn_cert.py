@@ -90,7 +90,7 @@ def main():
     client = WebClient(token=slack_token)
 
     #We want to log all renewals to the Slack #devops channel
-    devops_channel_id = "C8QPUH63S"
+    devops_channel_id = "C062W8HQ5RT"
 
     username = args.username
     ca_key_password = args.ca_key_password
