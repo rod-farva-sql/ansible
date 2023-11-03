@@ -17,7 +17,7 @@
   become: yes
   tasks:
       - name: Execute the script
-        ansible.builtin.shell:
+        ansible.builtin.command:
           cmd: "python3 /etc/openvpn/EasyRSA/revoke_ovpn_cert.py --username {{ username }} --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
           chdir: /etc/openvpn/EasyRSA
         register: revoke_cert_output
