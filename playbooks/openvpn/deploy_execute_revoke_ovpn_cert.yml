@@ -8,8 +8,7 @@
         dest: "/etc/openvpn/EasyRSA/revoke_ovpn_cert.py"
       register: download_output
       
-    - debug: 
-        var: download_output.output
+    - debug: msg="{{ download_output }}"
       
 
         
@@ -23,5 +22,6 @@
           chdir: /etc/openvpn/EasyRSA
         register: revoke_cert_output
         
-      - debug:
-          var: revoke_cert_output.output
+      - debug: msg="{{ revoke_cert_output }}"
+    
+      
