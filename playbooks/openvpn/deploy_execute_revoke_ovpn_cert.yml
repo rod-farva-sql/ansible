@@ -6,8 +6,8 @@
       copy:
         src: "revoke_ovpn_cert.py"
         dest: "/etc/openvpn/EasyRSA/revoke_ovpn_cert.py"
-      register: out
-    - debug: var=out.stdout_lines
+      register: out1
+    - debug: var=out1.stdout_lines
       
 
         
