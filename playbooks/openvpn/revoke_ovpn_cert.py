@@ -125,8 +125,9 @@ def main():
 
     else:
         logging.info(f"The certificate does not exist in the directory.")
-           
-
+        #Exit script
+        sys.exit('Certificate does not exist!')
+        
 if __name__ == "__main__":
     main()
 
