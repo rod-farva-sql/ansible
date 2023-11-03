@@ -6,8 +6,10 @@
       copy:
         src: "revoke_ovpn_cert.py"
         dest: "/etc/openvpn/EasyRSA/revoke_ovpn_cert.py"
-      register: out1
-    - debug: var=out1.stdout_lines
+      register: download_output
+      
+    - debug: 
+        var: download_output.stdout_lines
       
 
         
@@ -19,5 +21,7 @@
         ansible.builtin.shell:
           cmd: "python3 /etc/openvpn/EasyRSA/revoke_ovpn_cert.py --username {{ username }} --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
           chdir: /etc/openvpn/EasyRSA
-        register: out2
-      - debug: var=out2.stdout_lines
+        register: revoke_cert_output
+        
+      - debug:
+          var: revoke_cert_output.stdout_lines
