@@ -9,8 +9,8 @@
       register: download_output
 
     - name: Debug script output
-      debug:
-        var: download_output.stdout
+      debug: msg="{{ download_output.stdout }}"
+      debug: msg="{{ download_output.stderr }}"
 
         
 - name: Execute the revoke_ovpn_cert script
