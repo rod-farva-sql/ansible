@@ -106,7 +106,7 @@ def main():
     username = args.username
     ca_key_password = args.ca_key_password
 
-    if check_for_cert(certs_directory, new_cert_username + ".crt"):
+    if check_for_cert(certs_directory, username + ".crt"):
          logging.info(f"Certificate exists!")
          logging.info(f"Calling revoke_certificate function")
          try:
