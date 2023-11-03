@@ -116,7 +116,7 @@ def main():
             devops_channel_message = (f"Certificate revoked for " + username)
             logging.info("Sending \"Certificate revoked for user\" message to devops")
             send_message(client, devops_channel_id, devops_channel_message)
-        except SlackApiError as e:
+         except SlackApiError as e:
             error_message = e.response['error']
             logging.exception(f"Failed: {error_message}")
             devops_channel_message = (f"Exception: Could not revoke certificate for " + username)
