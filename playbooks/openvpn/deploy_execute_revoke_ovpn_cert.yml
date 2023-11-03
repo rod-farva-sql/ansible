@@ -19,8 +19,5 @@
         ansible.builtin.shell:
           cmd: "python3 /etc/openvpn/EasyRSA/revoke_ovpn_cert.py --username {{ username }} --slack_token {{ slack_token }} --ca_key_password {{ ca_key_password }}"
           chdir: /etc/openvpn/EasyRSA
-        register: script_output
-
-      - name: Debug script output
-        debug:
-          var: script_output.stdout
+        register: out2
+      - debug: var=out2.stdout_lines
