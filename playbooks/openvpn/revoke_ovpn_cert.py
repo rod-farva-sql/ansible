@@ -105,21 +105,27 @@ def main():
 
     username = args.username
     ca_key_password = args.ca_key_password
-    
-    try:
-        #Call the revoke_user function to revoke certificate
-        revoke_user(username, ca_key_password)
-        #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
-        devops_channel_message = (f"Certificate revoked for " + username)
-        logging.info("Sending \"Certificate revoked for user\" message to devops")
-        send_message(client, devops_channel_id, devops_channel_message)
-    except SlackApiError as e:
-        error_message = e.response['error']
-        logging.exception(f"Failed: {error_message}")
-        devops_channel_message = (f"Exception: Could not revoke certificate for " + username)
-        logging.info("Sending \"Could not revoke certificate\" message to \#devops")
-        send_message(client, devops_channel_id, devops_channel_message)
-   
+
+    if check_for_cert(certs_directory, new_cert_username + ".crt"):
+         logging.info(f"Certificate exists!")
+         logging.info(f"Calling revoke_certificate function")
+         try:
+            #Call the revoke_user function to revoke certificate
+            revoke_user(username, ca_key_password)
+            #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
+            devops_channel_message = (f"Certificate revoked for " + username)
+            logging.info("Sending \"Certificate revoked for user\" message to devops")
+            send_message(client, devops_channel_id, devops_channel_message)
+        except SlackApiError as e:
+            error_message = e.response['error']
+            logging.exception(f"Failed: {error_message}")
+            devops_channel_message = (f"Exception: Could not revoke certificate for " + username)
+            logging.info("Sending \"Could not revoke certificate\" message to \#devops")
+            send_message(client, devops_channel_id, devops_channel_message)
+
+    else:
+        logging.info(f"The certificate does not exist in the directory.")
+           
 
 if __name__ == "__main__":
     main()
