@@ -9,7 +9,7 @@
       register: download_output
       
     - debug: 
-        var: download_output.stdout_lines
+        var: download_output.output
       
 
         
@@ -24,4 +24,4 @@
         register: revoke_cert_output
         
       - debug:
-          var: revoke_cert_output.stdout_lines
+          var: revoke_cert_output.output
