@@ -38,6 +38,17 @@ def revoke_user(username, ca_key_password):
         logging.info(f"Revoked certificate for {username} and updated CRL.")
     except subprocess.CalledProcessError as e:
         logging.exception(f"An error occurred copying crl: {e}")
+
+#Function to check if a cert already exists
+def check_for_cert(directory_path, file_name):
+    # Get a list of all files in the directory
+    files_in_directory = os.listdir(directory_path)
+    # Check if the file_name exists in the list of files
+    if file_name in files_in_directory:
+        return True
+    else:
+        return False
+        
 # Function to send a message using the Slack API
 def send_message(client, user_id, message):
     try:
