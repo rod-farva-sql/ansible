@@ -273,7 +273,7 @@ def main():
                      send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
 
                      #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
-                     devops_channel_message = (f"Scheduled Certificate Renewall: Certificate " + ovpn_filename + " sent to " + username)
+                     devops_channel_message = (f"Scheduled Certificate Renewall: " + ovpn_filename + " sent to " + username)
                      logging.info("Sending \"Certificate sent to user\" message to devops")
                      send_message(client, devops_channel_id, devops_channel_message)
                    except SlackApiError as e:
