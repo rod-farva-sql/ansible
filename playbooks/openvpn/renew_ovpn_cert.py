@@ -278,22 +278,23 @@ def main():
                      devops_channel_message = (f"Scheduled Certificate Renewall: " + ovpn_filename + " sent to " + username)
                      logging.info("Sending \"Certificate sent to user\" message to devops")
                      send_message(client, devops_channel_id, devops_channel_message)
-                     logging.info(f"--------------------------------------------")
+
                    except SlackApiError as e:
                      error_message = e.response['error']
                      logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
                      devops_channel_message = (f"Error: Could not renew certificate for " + filename)
                      logging.info("Sending \"Could not renew certificate\" message to \#devops")
                      send_message(client, devops_channel_id, devops_channel_message)
-                     logging.info(f"--------------------------------------------")
+
                 else:
                      logging.exception("No user_id found for " + user_email)
                      devops_channel_message = (f"Error: Could not find user_id for " + username)
                      logging.info("Sending \"Could not find user_id\" message to \#devops")
                      send_message(client, devops_channel_id, devops_channel_message)
-                     logging.info(f"--------------------------------------------")
 
 
+    logging.info(f"--------------------------------------------")
+    
 if __name__ == "__main__":
     main()
 
