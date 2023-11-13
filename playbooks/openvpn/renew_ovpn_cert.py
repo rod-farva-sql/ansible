@@ -21,10 +21,11 @@ def check_certificate_expiration(cert_path, days_threshold):
     logging.info(f"Checking cert expiration for {cert_filename}")
     cert = x509.load_pem_x509_certificate(cert_data, default_backend())
     expiration_date = cert.not_valid_after
+    logging.info(f"Cert expiration: " + expiration_date)
     remaining_days = (expiration_date - datetime.datetime.utcnow()).days
-
+    logging.info(f"Days left until expiration: " + remaining_days)
     if remaining_days <= days_threshold:
-        logging.info(f"Certificate {cert_filename} expires in {remaining_days} days.")
+        logging.info(f"Certificate {cert_filename} expires in {remaining_days} days which is less than the threshold of " + {days_threshold})
         return username, is_mobile, year
     else:
         return None, False, None
