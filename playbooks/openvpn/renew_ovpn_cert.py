@@ -232,7 +232,6 @@ def main():
     for filename in os.listdir(certs_directory):
         #So we are going to check for any files that end in .crt but we don't want to touch the "server.crt"
         if filename.endswith(".crt") and "server.crt" not in filename:
-            logging.info("---------------------------------------------------")
             logging.info(f"Filename: " + filename)
             cert_path = os.path.join(certs_directory, filename)
             #We need to check to see if the certificate is expires or within our threshold to expire
