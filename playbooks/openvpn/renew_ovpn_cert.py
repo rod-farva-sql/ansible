@@ -25,10 +25,10 @@ def check_certificate_expiration(cert_path, days_threshold):
     remaining_days = (expiration_date - datetime.datetime.utcnow()).days
     logging.info(f"Days left until expiration: " + str(remaining_days))
     if remaining_days <= days_threshold:
-        logging.info(f"Certificate expiriation falls within threshold of : " + str(days_threshold) + " days")
+        logging.info(f"Certificate expiriation falls within threshold of " + str(days_threshold) + " days")
         return username, is_mobile, year
     else:
-        logging.info(f"Certificate expiriation does not fall within threshold of : " + str(days_threshold) + " days")
+        logging.info(f"Certificate expiriation does not fall within threshold of " + str(days_threshold) + " days")
         return None, False, None
 
 
