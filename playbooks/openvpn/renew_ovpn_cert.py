@@ -25,8 +25,10 @@ def check_certificate_expiration(cert_path, days_threshold):
     remaining_days = (expiration_date - datetime.datetime.utcnow()).days
     logging.info(f"Days left until expiration: " + str(remaining_days))
     if remaining_days <= days_threshold:
+        logging.info(f"Certificate expiriation falls within threshold of : " + str(days_threshold) + " days")
         return username, is_mobile, year
     else:
+        logging.info(f"Certificate expiriation does not fall within threshold of : " + str(days_threshold) + " days")
         return None, False, None
 
 
@@ -203,8 +205,8 @@ def main():
     # Parse the command-line arguments
     args = parser.parse_args()
     logging.info(f"--------------------------------------------")
-    logging.info(f"args.slack_token {args.slack_token}")
-    logging.info(f"args.ca_key_password {args.ca_key_password}")
+    #logging.info(f"args.slack_token {args.slack_token}")
+    #logging.info(f"args.ca_key_password {args.ca_key_password}")
 
     #This is where all the certificates that have been created are stored
     certs_directory = "/etc/openvpn/EasyRSA/pki/issued"
