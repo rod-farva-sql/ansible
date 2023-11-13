@@ -224,7 +224,6 @@ def main():
     #We want to log all renewals to the Slack #devops channel
     devops_channel_id = "C063P708JRE"
 
-    username = args.username
     ca_key_password = args.ca_key_password
     
     #Lets begin by looping through all the certs to see how old they are and to look for any that are going to expire in X days (X being "days_threshold")
