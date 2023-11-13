@@ -119,6 +119,9 @@ def main():
             #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
             devops_channel_message = (f"Certificate revoked for " + username)
             logging.info("Sending \"Certificate revoked for user\" message to devops")
+            logging.info("client: " + client)
+            logging.info("devops_channel_id: " + devops_channel_id)
+            logging.info("devops_channel_message: " + devops_channel_message)
             send_message(client, devops_channel_id, devops_channel_message)
          except SlackApiError as e:
             error_message = e.response['error']
