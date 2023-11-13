@@ -233,6 +233,7 @@ def main():
             logging.info("---------------------------------------------------")
             logging.info(f"Filename: " + filename)
             cert_path = os.path.join(certs_directory, filename)
+            #We need to check to see if the certificate is expires or within our threshold to expire
             username, is_mobile, year = check_certificate_expiration(cert_path, days_threshold)
 
             if username:
