@@ -199,6 +199,9 @@ def main():
     # Replace 'YOUR_TOKEN_HERE' with your actual Slack API token
     slack_token = args.slack_token 
     client = WebClient(token=slack_token)
+
+    #We want to log all creations to the Slack #devops channel
+    devops_channel_id = "C063P708JRE"
     
     ovpn_directory = "/etc/openvpn/EasyRSA/ovpn"
     current_year = datetime.datetime.now().year
@@ -250,6 +253,8 @@ def main():
 
                 send_message(client, user_id, message)
                 send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
+                devops_channel_message = (f"Certificate created for " + username)
+                send_message(client, devops_channel_id, devops_channel_message)
 
 if __name__ == "__main__":
     main()
