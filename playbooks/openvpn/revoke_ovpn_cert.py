@@ -51,12 +51,8 @@ def check_for_cert(directory_path, file_name):
         
 # Function to send a message using the Slack API
 def send_message(client, user_id, message):
-    logging.info("send_messaage function begin")
-    #logging.info("client: " + client)
-    logging.info("user_id: " + user_id)
-    logging.info("message: " + message)
     try:
-        response = client.chat_postMessagetoken(channel=user_id, text=message)
+        response = client.chat_postMessage(channel=user_id, text=message)
         if response["ok"]:
             logging.info("Message sent successfully to user " + user_id)
         else:
@@ -119,9 +115,6 @@ def main():
             #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
             devops_channel_message = (f"Certificate revoked for " + username)
             logging.info("Sending \"Certificate revoked for user\" message to devops")
-            #logging.info("client: " + client)
-            logging.info("devops_channel_id: " + devops_channel_id)
-            logging.info("devops_channel_message: " + devops_channel_message)
             send_message(client, devops_channel_id, devops_channel_message)
          except SlackApiError as e:
             error_message = e.response['error']
