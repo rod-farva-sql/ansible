@@ -252,7 +252,7 @@ def main():
                 if user_id is not None:
                    try:
                      #First we need to revoke the current certificate that is getting ready to expire
-                     revoke_user(username_with_mobile)
+                     revoke_user(username_with_mobile, ca_key_password)
                      #Next we need to renew/generate a new certificate
                      renew_certificate(new_cert_username, is_mobile)
                      #Now we need to take the current cert and add the ovpn specific connection information etc..
