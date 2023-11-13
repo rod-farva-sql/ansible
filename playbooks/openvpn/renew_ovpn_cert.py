@@ -144,7 +144,7 @@ def revoke_user(username, ca_key_password):
 # Function to send a message using the Slack API
 def send_message(client, user_id, message):
     try:
-        response = client.chat_postMessagetoken(channel=user_id, text=message)
+        response = client.chat_postMessage(channel=user_id, text=message)
         if response["ok"]:
             logging.info("Message sent successfully to user " + user_id)
         else:
