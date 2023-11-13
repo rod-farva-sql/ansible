@@ -245,7 +245,7 @@ def main():
                 if year:
                     username_with_mobile= f"{username_with_mobile}-{year}"
 
-                user_email = f"{username}@fanthreesixty.com"
+                user_email = f"{username}@gmail.com"
                 user_id = lookup_user_id_by_email(client, user_email)
 
                 if user_id is not None:
