@@ -52,7 +52,7 @@ def check_for_cert(directory_path, file_name):
 # Function to send a message using the Slack API
 def send_message(client, user_id, message):
     logging.info("send_messaage function begin")
-    logging.info("client: " + client)
+    #logging.info("client: " + client)
     logging.info("user_id: " + user_id)
     logging.info("message: " + message)
     try:
