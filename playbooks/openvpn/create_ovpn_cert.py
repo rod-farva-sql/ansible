@@ -201,7 +201,7 @@ def main():
     client = WebClient(token=slack_token)
 
     #We want to log all creations to the Slack #devops channel
-    devops_channel_id = "C063P708JRE"
+    devops_channel_id = "C06D6E1QMFE"
     
     ovpn_directory = "/etc/openvpn/EasyRSA/ovpn"
     current_year = datetime.datetime.now().year
