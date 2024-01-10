@@ -13,5 +13,5 @@
 
     - name: Display list of files
       debug:
-        msg: "{{ item.path }}"
+        msg: "{{ item }}"
       with_items: "{{ openvpn_files.files | map(attribute='path') | list }}"
