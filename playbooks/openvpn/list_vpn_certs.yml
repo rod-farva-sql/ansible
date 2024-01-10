@@ -13,8 +13,4 @@
 
     - name: Display list of OpenVPN files
       debug:
-        msg: |
-          Files in /etc/openvpn/EasyRSA/pki/issued folder:
-          {% for file in openvpn_files.files %}
-          - {{ file.path }}
-          {% endfor %}
+        msg: "Files in /etc/openvpn/EasyRSA/pki/issued folder:\n{{ openvpn_files.files | map(attribute='path') | join('\n') }}"
