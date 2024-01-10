@@ -13,4 +13,4 @@
 
     - name: Display list of file names
       debug:
-        msg: "{{ openvpn_files.files | map(attribute='path') | map('basename') | list }}"
+        msg: "{{ openvpn_files.files | map(attribute='path') | map('basename') | list | sort }}"
