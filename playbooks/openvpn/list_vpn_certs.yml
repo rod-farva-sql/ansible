@@ -1,16 +1,16 @@
 ---
-- name: List EasyRSA pki certifcate files
+- name: List EasyRSA pki certificate files
   hosts: all
   gather_facts: no
 
   tasks:
-    - name: Find files in /etc/openvpn/EasyRSA/pki/issued folder
+    - name: Find files in /etc/openvpn/EasyRSA/pki/issued
       find:
         paths: "/etc/openvpn/EasyRSA/pki/issued"
         recurse: no
         file_type: file
       register: openvpn_files
 
-    - name: Display list of file names
+    - name: Display list of certificates
       debug:
         msg: "{{ openvpn_files.files | map(attribute='path') | map('basename') | list | sort }}"
