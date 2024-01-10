@@ -11,6 +11,6 @@
         file_type: file
       register: openvpn_files
 
-    - name: Display contents of openvpn_files variable
+    - name: Display list of OpenVPN files
       debug:
-        var: openvpn_files
+        msg: "Files in /etc/openvpn/EasyRSA/pki/issued folder: {{ openvpn_files.files | map(attribute='path') | list }}"
