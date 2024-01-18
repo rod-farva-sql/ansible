@@ -17,7 +17,7 @@ def check_certificate_expiration(cert_path, days_threshold):
     with open(cert_path, 'rb') as cert_file:
         cert_data = cert_file.read()
     cert_filename = os.path.basename(cert_path)
-    username, is_mobile, year = parse_certificate_filename(cert_filename)
+    #username, is_mobile, year = parse_certificate_filename(cert_filename)
     logging.info(f"Checking cert expiration for {cert_filename}")
     cert = x509.load_pem_x509_certificate(cert_data, default_backend())
     expiration_date = cert.not_valid_after
@@ -26,13 +26,14 @@ def check_certificate_expiration(cert_path, days_threshold):
     logging.info(f"Days left until expiration: " + str(remaining_days))
     if remaining_days <= days_threshold:
         logging.info(f"Certificate expiration falls within threshold of " + str(days_threshold) + " days")
-        return username, is_mobile, year
+        return True
     else:
         logging.info(f"Certificate expiration does not fall within threshold of " + str(days_threshold) + " days")
-        return None, False, None
+        return False
 
 
-def parse_certificate_filename(cert_filename):
+def parse_certificate_filename(cert_path):
+    cert_filename = os.path.basename(cert_path)
     base_filename = cert_filename.replace('.crt', '')
     is_mobile = "-mobile" in base_filename
     parts = base_filename.split('-')
@@ -235,7 +236,9 @@ def main():
             logging.info(f"Filename: " + filename)
             cert_path = os.path.join(certs_directory, filename)
             #We need to check to see if the certificate is expires or within our threshold to expire
-            username, is_mobile, year = check_certificate_expiration(cert_path, days_threshold)
+            check_certificate_expiration(cert_path, days_threshold)
+            #We need to extract the username, if its a mobile certifciate, and if it includes a year in the name
+            username, is_mobile, year = parse_certificate_filename(cert_path)
 
             if username:
                 new_cert_username = f"{username}-{current_year}"
