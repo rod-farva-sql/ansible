@@ -120,36 +120,6 @@ def check_for_cert(directory_path, file_name):
     else:
         return False
 
-#Function to revoke a certificate
-def revoke_certificate(cert_name, ca_key_password):
-    logging.info(f"Revoking cert for {cert_name}") 
-    # Check if the certificate name is in the list of excluded names
-    excluded_names = ["server", "engineering_prod", "ca"]
-    if cert_name.lower() in excluded_names:
-        logging.error(f"Certificate '{cert_name}' is not allowed to be revoked.")
-        sys.exit(1)
-    # Run the 'easyrsa revoke' command and accept the default common name prompt
-    revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa revoke {}".format(cert_name), timeout=10)
-    revoke_process.expect("Continue with revocation:*")
-    revoke_process.sendline("yes")
-    revoke_process.expect("Enter pass phrase for /etc/openvpn/EasyRSA/pki/private/ca.key:*")
-    time.sleep(1) #need to have a slight pause or it will crash
-    revoke_process.sendline(ca_key_password)
-    revoke_process.expect(pexpect.EOF)
-
-    logging.info("Generating new CRL")
-    revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa gen-crl", timeout=10)
-    revoke_process.expect("Enter pass phrase for /etc/openvpn/EasyRSA/pki/private/ca.key:*")
-    time.sleep(1)
-    revoke_process.sendline(ca_key_password)
-    revoke_process.expect(pexpect.EOF)
-
-    # Move the CRL file
-    mv_process = pexpect.spawn("mv /etc/openvpn/EasyRSA/pki/crl.pem /etc/openvpn/crl_engineering_prod.pem", timeout=10)
-    mv_process.expect(pexpect.EOF)
-
-
-
 
 def main():
 
@@ -217,17 +187,21 @@ def main():
         else:
             new_cert_username = username
 
+
+        # Check if the certificate name is in the list of excluded names as we don't want to override these..
+        excluded_names = ["server", "engineering_prod", "ca"]
+        if cert_name.lower() in excluded_names:
+            logging.error(f"Certificate '{cert_name}' is not allowed to be created!!!!!.")
+            sys.exit(1)
+      
         logging.info(f"Checking if certificate already exists")
 
         if check_for_cert(certs_directory, new_cert_username + ".crt"):
             logging.info(f"Certificate already exists!")
-            #Exit script
-            #sys.exit('Certificate already exists!')
-            logging.info(f"Calling revoke_certificate function")
-            revoke_certificate(new_cert_username, ca_key_password)
-
+            sys.exit(1)
         else:
             logging.info(f"The certificate does not exist in the directory.")
+            
         logging.info(f"Calling create_certificate function")
         create_certificate(new_cert_username, ca_key_password)
         logging.info(f"Calling generate_ovpn_file function")
