@@ -212,8 +212,6 @@ def main():
         else:
             new_cert_username = username
 
-        new_cert_username = f"{new_cert_username}-{current_year}"
-
         logging.info(f"Checking if certificate already exists")
 
         if check_for_cert(certs_directory, new_cert_username + ".crt"):
