@@ -231,7 +231,7 @@ def main():
                 send_message(client, user_id, message)
                 send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
         else:
-            logging.info(f"Skipping sending slack message to username}")
+            logging.info(f"Skipping sending slack message to {username}")
             
         #We want to send a message to #devops about the new cert being created
         logging.info(f"Sending slack message to #devops")
