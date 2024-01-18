@@ -183,15 +183,15 @@ def main():
 
     if username:
         if is_mobile:
-            new_cert_username = f"{username}-mobile"
+            new_cert_username = f"{username.lower()}-mobile"
         else:
-            new_cert_username = username
+            new_cert_username = username.lower()
 
 
         # Check if the certificate name is in the list of excluded names as we don't want to override these..
         excluded_names = ["server", "engineering_prod", "ca"]
-        if cert_name.lower() in excluded_names:
-            logging.error(f"Certificate '{cert_name}' is not allowed to be created!!!!!.")
+        if new_cert_username in excluded_names:
+            logging.error(f"Certificate '{new_cert_username}' is not allowed to be created!!!!!.")
             sys.exit(1)
       
         logging.info(f"Checking if certificate already exists")
