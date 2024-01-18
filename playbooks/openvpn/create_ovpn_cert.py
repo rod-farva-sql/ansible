@@ -231,7 +231,8 @@ def main():
                 send_message(client, user_id, message)
                 send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
             
-        #We want to send a message to #devops about the new cert being created    
+        #We want to send a message to #devops about the new cert being created
+        logging.info(f"Sending slack message to #devops")
         devops_channel_message = (f"Certificate " + ovpn_filename + " created for " + username)
         send_message(client, devops_channel_id, devops_channel_message)
 
