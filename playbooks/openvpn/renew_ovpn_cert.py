@@ -17,7 +17,6 @@ def check_certificate_expiration(cert_path, days_threshold):
     with open(cert_path, 'rb') as cert_file:
         cert_data = cert_file.read()
     cert_filename = os.path.basename(cert_path)
-    #username, is_mobile, year = parse_certificate_filename(cert_filename)
     logging.info(f"Checking cert expiration for {cert_filename}")
     cert = x509.load_pem_x509_certificate(cert_data, default_backend())
     expiration_date = cert.not_valid_after
@@ -34,9 +33,9 @@ def check_certificate_expiration(cert_path, days_threshold):
 
 def parse_certificate_filename(cert_path):
     cert_filename = os.path.basename(cert_path)
-    base_filename = cert_filename.replace('.crt', '')
-    is_mobile = "-mobile" in base_filename
-    parts = base_filename.split('-')
+    original_cert_name = cert_filename.replace('.crt', '')
+    is_mobile = "-mobile" in original_cert_name
+    parts = original_cert_name.split('-')
     if is_mobile:
         parts.remove("mobile")
     username = parts[0]
@@ -45,13 +44,13 @@ def parse_certificate_filename(cert_path):
         if part.isdigit() and len(part) == 4:
             year = part
             break
-
+    logging.info(f"Original Cert Name:  {original_cert_name}")
     logging.info(f"Username:  {username}")
     logging.info(f"Is Mobile:  {is_mobile}")
     logging.info(f"Year:  {year}")
-    return username, is_mobile, year
+    return original_cert_name, username, is_mobile, year
 
-def renew_certificate(new_cert_username, is_mobile, ca_key_password):
+def renew_certificate(new_cert_username, ca_key_password):
     logging.info(f"Renewing certificate for {new_cert_username}")
     gen_req_process = pexpect.spawn('/etc/openvpn/EasyRSA/easyrsa gen-req {} nopass'.format(new_cert_username))
     gen_req_process.expect("Common Name*")
@@ -83,7 +82,7 @@ def renew_certificate(new_cert_username, is_mobile, ca_key_password):
     else:
         logging.exception("Certificate .crt copy failed.")
 
-def generate_ovpn_file(new_cert_username, is_mobile):
+def generate_ovpn_file(new_cert_username):
     logging.info("Generating ovpn file")
     logging.info(f'Extracted username: {new_cert_username}')
     template_file_path = '/etc/openvpn/EasyRSA/ovpn_template.txt'
@@ -231,37 +230,39 @@ def main():
     
     #Lets begin by looping through all the certs to see how old they are and to look for any that are going to expire in X days (X being "days_threshold")
     for filename in os.listdir(certs_directory):
+        
         #So we are going to check for any files that end in .crt but we don't want to touch the "server.crt"
         if filename.endswith(".crt") and "server.crt" not in filename:
             logging.info(f"Filename: " + filename)
             cert_path = os.path.join(certs_directory, filename)
+            
             #We need to check to see if the certificate is expires or within our threshold to expire
             check_certificate_expiration(cert_path, days_threshold)
-            #We need to extract the username, if its a mobile certifciate, and if it includes a year in the name
-            username, is_mobile, year = parse_certificate_filename(cert_path)
+            
+            #We need to extract the orignal_cert_name, the username, if its a mobile certifciate, and if it includes a year in the name
+            original_cert_name, username, is_mobile, year = parse_certificate_filename(cert_path)
 
             if username:
-                new_cert_username = f"{username}-{current_year}"
+                # Create a new certificate username based on conditions (excluding year)
+                new_cert_username = f"{username}"
+                
                 if is_mobile:
-                    new_cert_username = f"{username}-mobile-{current_year}"
-                if is_mobile:
-                    username_with_mobile = f"{username}-mobile"
-                else:
-                    username_with_mobile = username
-                if year:
-                    username_with_mobile= f"{username_with_mobile}-{year}"
-
+                    new_cert_username += "-mobile"
+                
                 user_email = f"{username}@gmail.com"
+
+                #Lets check slack to verify/get the user_id from the email address
                 user_id = lookup_user_id_by_email(client, user_email)
 
+                #We will only renew certificates if the certificate is associated with a valid email account
                 if user_id is not None:
                    try:
-                     #First we need to revoke the current certificate that is getting ready to expire
-                     revoke_user(username_with_mobile, ca_key_password)
+                     #First we need to revoke the original certificate that is getting ready to expire
+                     revoke_user(original_cert_name, ca_key_password)
                      #Next we need to renew/generate a new certificate
-                     renew_certificate(new_cert_username, is_mobile, ca_key_password)
+                     renew_certificate(new_cert_username, ca_key_password)
                      #Now we need to take the current cert and add the ovpn specific connection information etc..
-                     generate_ovpn_file(new_cert_username, is_mobile)
+                     generate_ovpn_file(new_cert_username)
                      ovpn_filename = f'eng-{new_cert_username}.ovpn'
 
                      #The default message sent to a user for a non mobile device
