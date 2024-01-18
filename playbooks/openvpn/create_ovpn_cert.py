@@ -14,7 +14,7 @@ import ast
 
 warnings.filterwarnings('ignore')
 
-def create_certificate(new_cert_username, is_mobile, ca_key_password):
+def create_certificate(new_cert_username, ca_key_password):
     logging.info(f"Creating certificate for {new_cert_username}")
     gen_req_process = pexpect.spawn('/etc/openvpn/EasyRSA/easyrsa gen-req {} nopass'.format(new_cert_username))
     gen_req_process.expect("Common Name*")
@@ -46,7 +46,7 @@ def create_certificate(new_cert_username, is_mobile, ca_key_password):
     else:
         logging.exception("Certificate .crt copy failed.")
 
-def generate_ovpn_file(new_cert_username, is_mobile, ca_key_password):
+def generate_ovpn_file(new_cert_username, ca_key_password):
     logging.info("Generating ovpn file")
     logging.info(f'Extracted username: {new_cert_username}')
     template_file_path = '/etc/openvpn/EasyRSA/ovpn_template.txt'
@@ -224,9 +224,9 @@ def main():
         else:
             logging.info(f"The certificate does not exist in the directory.")
         logging.info(f"Calling create_certificate function")
-        create_certificate(new_cert_username, is_mobile, ca_key_password)
+        create_certificate(new_cert_username, ca_key_password)
         logging.info(f"Calling generate_ovpn_file function")
-        generate_ovpn_file(new_cert_username, is_mobile, ca_key_password)
+        generate_ovpn_file(new_cert_username, ca_key_password)
 
         if send_slack_message:
             # Send the message to the user over Slack
