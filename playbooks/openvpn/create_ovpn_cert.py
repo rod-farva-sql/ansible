@@ -235,7 +235,7 @@ def main():
             
         #We want to send a message to #devops about the new cert being created
         logging.info(f"Sending slack message to #devops")
-        devops_channel_message = (f"Certificate " + ovpn_filename + " created for " + username)
+        devops_channel_message = (f"Certificate created for " + username)
         try:
             send_message(client, devops_channel_id, devops_channel_message)
             logging.info(f"Message successfully sent to #devops")
