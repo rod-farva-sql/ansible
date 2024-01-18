@@ -123,6 +123,11 @@ def check_for_cert(directory_path, file_name):
 #Function to revoke a certificate
 def revoke_certificate(cert_name, ca_key_password):
     logging.info(f"Revoking cert for {cert_name}") 
+    # Check if the certificate name is in the list of excluded names
+    excluded_names = ["server", "engineering_prod", "ca"]
+    if cert_name.lower() in excluded_names:
+        logging.error(f"Certificate '{cert_name}' is not allowed to be revoked.")
+        sys.exit(1)
     # Run the 'easyrsa revoke' command and accept the default common name prompt
     revoke_process = pexpect.spawn("/etc/openvpn/EasyRSA/easyrsa revoke {}".format(cert_name), timeout=10)
     revoke_process.expect("Continue with revocation:*")
