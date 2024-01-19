@@ -49,7 +49,7 @@ def create_certificate(new_cert_username, ca_key_password):
 def generate_ovpn_file(new_cert_username, ca_key_password):
     logging.info("Generating ovpn file")
     logging.info(f'Extracted username: {new_cert_username}')
-    template_file_path = '/etc/openvpn/EasyRSA/ovpn_template.txt'
+    template_file_path = '/etc/openvpn/EasyRSA/ovpn/ovpn_template.txt'
     ovpn_file_path = f'/etc/openvpn/EasyRSA/ovpn/eng-{new_cert_username}.ovpn'
     crt_file_path = f'/etc/openvpn/certs/{new_cert_username}.crt'
     key_file_path = f'/etc/openvpn/certs/{new_cert_username}.key'
