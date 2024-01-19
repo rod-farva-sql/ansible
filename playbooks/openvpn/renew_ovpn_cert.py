@@ -67,9 +67,9 @@ def renew_certificate(new_cert_username, ca_key_password):
     copy_key_process = pexpect.spawn('cp pki/private/{}.key /etc/openvpn/certs'.format(new_cert_username))
     copy_key_process.expect(pexpect.EOF)
 
-    crt_destination = '/etc/openvpn/certs/{}.key'.format(new_cert_username)
-    if os.path.exists(crt_destination):
-        logging.info("Certificate .key copied successfully: " + crt_destination)
+    key_destination = '/etc/openvpn/certs/{}.key'.format(new_cert_username)
+    if os.path.exists(key_destination):
+        logging.info("Certificate .key copied successfully: " + key_destination)
     else:
         logging.exception("Certificate .key copy failed.")
 
@@ -85,7 +85,7 @@ def renew_certificate(new_cert_username, ca_key_password):
 def generate_ovpn_file(new_cert_username):
     logging.info("Generating ovpn file")
     logging.info(f'Extracted username: {new_cert_username}')
-    template_file_path = '/etc/openvpn/EasyRSA/ovpn_template.txt'
+    template_file_path = '/etc/openvpn/EasyRSA/ovpn/ovpn_template.txt'
     ovpn_file_path = f'/etc/openvpn/EasyRSA/ovpn/eng-{new_cert_username}.ovpn'
     crt_file_path = f'/etc/openvpn/certs/{new_cert_username}.crt'
     key_file_path = f'/etc/openvpn/certs/{new_cert_username}.key'
@@ -230,15 +230,14 @@ def main():
     ca_key_password = args.ca_key_password
 
     # List of certificates to exclude from renewal
-    certificates_to_exclude = ["engineering2_prod.crt", "engineering3_prod.crt", "engineering4_prod.crt"]
+    certificates_to_exclude = ["sirjenkins.crt", "engineering_prod.crt", "ca.crt", "server.crt"]
     
     #Lets begin by looping through all the certs to see how old they are and to look for any that are going to expire in X days (X being "days_threshold")
     for filename in os.listdir(certs_directory):
         logging.info(f"----------------")
-
-                
-        #So we are going to check for any files that end in .crt but we don't want to touch the "server.crt"
-        if filename.endswith(".crt") and "server.crt" not in filename:
+               
+        #So we are going to check for any files that end in .crt 
+        if filename.endswith(".crt"):
             logging.info(f"Filename: " + filename)
             cert_path = os.path.join(certs_directory, filename)
 
@@ -262,7 +261,7 @@ def main():
             original_cert_name, username, is_mobile, year = parse_certificate_filename(cert_path)
 
             if username:
-                # Create a new certificate username based on conditions (excluding year)
+                # Create a new certificate username based on conditions 
                 new_cert_username = f"{username}"
                 
                 if is_mobile:
@@ -298,7 +297,7 @@ def main():
                      send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
 
                      #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
-                     devops_channel_message = (f"Scheduled Certificate Renewall: " + ovpn_filename + " sent to " + username)
+                     devops_channel_message = (f"Scheduled Certificate Renewal: " + ovpn_filename + " sent to " + username)
                      logging.info("Sending \"Certificate sent to user\" message to devops")
                      send_message(client, devops_channel_id, devops_channel_message)
 
