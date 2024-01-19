@@ -218,7 +218,7 @@ def main():
     ovpn_directory = "/etc/openvpn/EasyRSA/ovpn"
 
     #How many days left in the certificate expiration before we renew
-    days_threshold = 1
+    days_threshold = 7
 
     current_year = datetime.datetime.now().year
 
