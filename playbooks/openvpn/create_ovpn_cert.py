@@ -131,19 +131,11 @@ def main():
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-
-
     # Create an argument parser
     parser = argparse.ArgumentParser(description='OpenVPN Script')
 
     # Add a username argument
     parser.add_argument('--username', help='username', required=True)
-
-    # Add a -slack flag
-    #parser.add_argument('-slack', action='store_true', help='Send the message to the user over Slack')
-
-    # Add a -mobile flag
-    #parser.add_argument('-mobile', action='store_true', help='Append "-mobile" to the username')
 
     # Add an is_mobile argument
     parser.add_argument('--is_mobile', type=str, help='Create a mobile certificate (True/False)', required=True)
@@ -179,7 +171,6 @@ def main():
     devops_channel_id = "C06D6E1QMFE"
     
     ovpn_directory = "/etc/openvpn/EasyRSA/ovpn"
-    current_year = datetime.datetime.now().year
 
     if username:
         if is_mobile:
