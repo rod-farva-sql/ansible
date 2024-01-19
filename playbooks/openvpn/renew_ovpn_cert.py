@@ -220,8 +220,6 @@ def main():
     #How many days left in the certificate expiration before we renew
     days_threshold = 7
 
-    current_year = datetime.datetime.now().year
-
     # Slack API token for OVPN Bot provided by --slack_token argument which is provided from ansible credential
     slack_token = args.slack_token
     client = WebClient(token=slack_token)
