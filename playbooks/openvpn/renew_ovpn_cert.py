@@ -64,18 +64,24 @@ def renew_certificate(new_cert_username, ca_key_password):
     sign_req_process.sendline(ca_key_password)
     sign_req_process.expect(pexpect.EOF)
 
+    #We generated the .crt and .key files now we need to copy them over to /etc/openvpn/certs
+
+    #Copy .key file over to /etc/openvpn/certs
     copy_key_process = pexpect.spawn('cp pki/private/{}.key /etc/openvpn/certs'.format(new_cert_username))
     copy_key_process.expect(pexpect.EOF)
-
+    
+    #Check to see if .key file copied over succesfully
     key_destination = '/etc/openvpn/certs/{}.key'.format(new_cert_username)
     if os.path.exists(key_destination):
         logging.info("Certificate .key copied successfully: " + key_destination)
     else:
         logging.exception("Certificate .key copy failed.")
-
+        
+    #Copy .cert file over to /etc/openvpn/certs
     copy_crt_process = pexpect.spawn('cp pki/issued/{}.crt /etc/openvpn/certs'.format(new_cert_username))
     copy_crt_process.expect(pexpect.EOF)
 
+    #Check to see if .crt file copied over successfully
     crt_destination = '/etc/openvpn/certs/{}.crt'.format(new_cert_username)
     if os.path.exists(crt_destination):
         logging.info("Certificate .crt copied successfully: " + crt_destination)
@@ -274,39 +280,39 @@ def main():
 
                 #We will only renew certificates if the certificate is associated with a valid email account
                 if user_id is not None:
-                   try:
-                     #First we need to revoke the original certificate that is getting ready to expire
-                     revoke_user(original_cert_name, ca_key_password)
-                     #Next we need to renew/generate a new certificate
-                     renew_certificate(new_cert_username, ca_key_password)
-                     #Now we need to take the current cert and add the ovpn specific connection information etc..
-                     generate_ovpn_file(new_cert_username)
-                     ovpn_filename = f'eng-{new_cert_username}.ovpn'
+                    try:
+                        #First we need to revoke the original certificate that is getting ready to expire
+                        revoke_user(original_cert_name, ca_key_password)
+                        #Next we need to renew/generate a new certificate
+                        renew_certificate(new_cert_username, ca_key_password)
+                        #Now we need to take the current cert and add the ovpn specific connection information etc..
+                        generate_ovpn_file(new_cert_username)
+                        ovpn_filename = f'eng-{new_cert_username}.ovpn'
 
-                     #The default message sent to a user for a non mobile device
-                     message = ("Hello!\nThis is the OpenVPN Bot!  Your 'PC' VPN certificate has expired!  We have posted instructions on the Confluence wiki at https://xxx.xxxx.xxx")
+                        #The default message sent to a user for a non mobile device
+                        message = ("Hello!\nThis is the OpenVPN Bot!  Your 'PC' VPN certificate has expired!  We have posted instructions on the Confluence wiki at https://xxx.xxxx.xxx")
 
-                     if is_mobile:
-                          message = ("Hello!\nThis is the OpenVPN Bot!  Your 'Mobile' VPN certificate has expired!  We have posted instructions on the Confluence wiki at https://xxx.xxxx.xxx")
+                        if is_mobile:
+                            message = ("Hello!\nThis is the OpenVPN Bot!  Your 'Mobile' VPN certificate has expired!  We have posted instructions on the Confluence wiki at https://xxx.xxxx.xxx")
 
-                     logging.info("Sending message to " + user_id)
-                     #Now we are going to send the above message to the end user over slack
-                     send_message(client, user_id, message)
-                     logging.info("Sending " + ovpn_filename + " to " + user_id)
-                     #Now we will send the "ovpn" file to the end user over slack
-                     send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
+                        logging.info("Sending message to " + user_id)
+                        #Now we are going to send the above message to the end user over slack
+                        send_message(client, user_id, message)
+                        logging.info("Sending " + ovpn_filename + " to " + user_id)
+                        #Now we will send the "ovpn" file to the end user over slack
+                        send_file(client, user_id, os.path.join(ovpn_directory, ovpn_filename), ovpn_filename)
 
-                     #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
-                     devops_channel_message = (f"Scheduled Certificate Renewal: " + ovpn_filename + " sent to " + username)
-                     logging.info("Sending \"Certificate sent to user\" message to devops")
-                     send_message(client, devops_channel_id, devops_channel_message)
+                        #If all of this worked without blowing up.. notify #devops that a new cert was sent to the user
+                        devops_channel_message = (f"Scheduled Certificate Renewal: " + ovpn_filename + " sent to " + username)
+                        logging.info("Sending \"Certificate sent to user\" message to devops")
+                        send_message(client, devops_channel_id, devops_channel_message)
 
-                   except SlackApiError as e:
-                     error_message = e.response['error']
-                     logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
-                     devops_channel_message = (f"Error: Could not renew certificate for " + filename)
-                     logging.info("Sending \"Could not renew certificate\" message to \#devops")
-                     send_message(client, devops_channel_id, devops_channel_message)
+                    except SlackApiError as e:
+                        error_message = e.response['error']
+                        logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
+                        devops_channel_message = (f"Error: Could not renew certificate for " + filename)
+                        logging.info("Sending \"Could not renew certificate\" message to \#devops")
+                        send_message(client, devops_channel_id, devops_channel_message)
 
                 else:
                      logging.exception("No user_id found for " + user_email)
