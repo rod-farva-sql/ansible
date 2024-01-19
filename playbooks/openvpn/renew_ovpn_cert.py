@@ -230,9 +230,18 @@ def main():
     devops_channel_id = "C06D6E1QMFE"
 
     ca_key_password = args.ca_key_password
+
+    # List of certificates to exclude from renewal
+    certificates_to_exclude = ["engineering2_prod.crt", "engineering3_prod.crt", "engineering4_prod.crt"]
     
     #Lets begin by looping through all the certs to see how old they are and to look for any that are going to expire in X days (X being "days_threshold")
     for filename in os.listdir(certs_directory):
+        logging.info(f"----------------")
+
+        # Check if the filename is in the exclusion list
+        if filename in certificates_to_exclude:
+            logging.info(f"Skipping renewal for excluded certificate: {filename}")
+            continue  # Skip the rest of the loop and move to the next iteration
         
         #So we are going to check for any files that end in .crt but we don't want to touch the "server.crt"
         if filename.endswith(".crt") and "server.crt" not in filename:
@@ -296,7 +305,7 @@ def main():
                 else:
                      logging.exception("No user_id found for " + user_email)
                      devops_channel_message = (f"Error: Could not find user_id for " + username)
-                     logging.info("Sending \"Could not find user_id\" message to \#devops")
+                     logging.info(f"Sending \"Could not find user_id\" message to #devops")
                      send_message(client, devops_channel_id, devops_channel_message)
 
 
