@@ -177,13 +177,16 @@ def lookup_user_id_by_email(client, user_email):
     try:
         response = client.users_lookupByEmail(email=user_email)
         user_id = response['user']['id']
-        logging.info(f"User with email {user_email} has ID: {user_id}")
+        logging.info(f"User with email {user_email} has Slack ID: {user_id}")
         return user_id
     except SlackApiError as e:
-        error_message = e.response['error']
-        logging.exception(f"Failed to look up user with email {user_email}: {error_message}")
-        return None
-
+        if e.response['error'] == 'users_not_found':
+            logging.warning(f"No Slack user found with email {user_email}")
+            return None
+        else:
+            error_message = e.response['error']
+            logging.warning(f"Failed to look up Slack user with email {user_email}: {error_message}")
+            return None
 
 def main():
 
