@@ -238,18 +238,27 @@ def main():
     for filename in os.listdir(certs_directory):
         logging.info(f"----------------")
 
-        # Check if the filename is in the exclusion list
-        if filename in certificates_to_exclude:
-            logging.info(f"Skipping renewal for excluded certificate: {filename}")
-            continue  # Skip the rest of the loop and move to the next iteration
-        
+                
         #So we are going to check for any files that end in .crt but we don't want to touch the "server.crt"
         if filename.endswith(".crt") and "server.crt" not in filename:
             logging.info(f"Filename: " + filename)
             cert_path = os.path.join(certs_directory, filename)
+
+            # Check if the filename is in the exclusion list
+            if filename in certificates_to_exclude:
+                logging.info(f"Skipping renewal for excluded certificate: {filename}")
+                # We need to check to see if the certificate is expired or within our threshold to expire
+                if check_certificate_expiration(cert_path, days_threshold):
+                    logging.info(f"WARNING! Excluded certificate {filename} is getting ready to expire!")
+                    devops_channel_message = (f"WARNING! Excluded certificate {filename} is getting ready to expire!")
+                    send_message(client, devops_channel_id, devops_channel_message)
+                continue  # Skip the rest of the loop and move to the next iteration
+
             
-            #We need to check to see if the certificate is expires or within our threshold to expire
-            check_certificate_expiration(cert_path, days_threshold)
+            # We need to check to see if the certificate is expires or within our threshold to expire
+            if not check_certificate_expiration(cert_path, days_threshold):
+                logging.info(f"Skipping renewal for certificate: {filename}")
+                continue  # Skip the rest of the loop and move to the next iteration
             
             #We need to extract the orignal_cert_name, the username, if its a mobile certifciate, and if it includes a year in the name
             original_cert_name, username, is_mobile, year = parse_certificate_filename(cert_path)
