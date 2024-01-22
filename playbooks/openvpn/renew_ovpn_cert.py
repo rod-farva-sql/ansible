@@ -236,7 +236,7 @@ def main():
     ca_key_password = args.ca_key_password
 
     # List of certificates to exclude from renewal
-    certificates_to_exclude = ["sirjenkins.crt", "engineering_prod.crt", "ca.crt", "server.crt"]
+    certificates_to_exclude = ["engineering5_prod.crt", "sirjenkins.crt", "engineering_prod.crt", "ca.crt", "server.crt"]
     
     #Lets begin by looping through all the certs to see how old they are and to look for any that are going to expire in X days (X being "days_threshold")
     for filename in os.listdir(certs_directory):
