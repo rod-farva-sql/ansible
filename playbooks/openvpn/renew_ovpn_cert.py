@@ -25,11 +25,10 @@ def check_certificate_expiration(cert_path, days_threshold):
     logging.info(f"Days left until expiration: " + str(remaining_days))
     if remaining_days <= days_threshold:
         logging.info(f"Certificate expiration falls within threshold of " + str(days_threshold) + " days")
-        return True
+        return True, remaining_days  # Modified to return remaining_days
     else:
         logging.info(f"Certificate expiration does not fall within threshold of " + str(days_threshold) + " days")
-        return False
-
+        return False, remaining_days  # Modified to return remaining_days
 
 def parse_certificate_filename(cert_path):
     cert_filename = os.path.basename(cert_path)
@@ -251,16 +250,17 @@ def main():
             if filename in certificates_to_exclude:
                 logging.info(f"Skipping renewal for excluded certificate: {filename}")
                 # We need to check to see if the certificate is expired or within our threshold to expire
-                if check_certificate_expiration(cert_path, days_threshold):
-                    logging.info(f"WARNING! Excluded certificate {filename} is getting ready to expire!")
-                    devops_channel_message = (f"WARNING! Excluded certificate {filename} is getting ready to expire!")
+                needs_renewal, remaining_days = check_certificate_expiration(cert_path, days_threshold)  # Adjusted to capture remaining_days
+                if needs_renewal:
+                    logging.info(f"WARNING! Excluded certificate {filename} is getting ready to expire in {remaining_days} day(s)!")
+                    devops_channel_message = f"WARNING! Excluded certificate {filename} is getting ready to expire in {remaining_days} day(s)!"  # Modified to include remaining_days
                     send_message(client, devops_channel_id, devops_channel_message)
                 continue  # Skip the rest of the loop and move to the next iteration
-
             
-            # We need to check to see if the certificate is expires or within our threshold to expire
-            if not check_certificate_expiration(cert_path, days_threshold):
-                logging.info(f"Skipping renewal for certificate: {filename}")
+            # We need to check to see if the certificate expires or within our threshold to expire
+            needs_renewal, remaining_days = check_certificate_expiration(cert_path, days_threshold)
+            if not needs_renewal:
+                logging.info(f"Skipping renewal for certificate: {filename}. {remaining_days} day(s) left until expiration.")
                 continue  # Skip the rest of the loop and move to the next iteration
             
             #We need to extract the orignal_cert_name, the username, if its a mobile certifciate, and if it includes a year in the name
