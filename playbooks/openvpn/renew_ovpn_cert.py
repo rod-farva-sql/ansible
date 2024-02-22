@@ -254,7 +254,7 @@ def main():
                 if needs_renewal:
                     logging.info(f"WARNING! Excluded certificate {filename} is getting ready to expire in {remaining_days} day(s)!")
                     devops_channel_message = f"WARNING! Excluded certificate {filename} is getting ready to expire in {remaining_days} day(s)!"  # Modified to include remaining_days
-                    logging.info("Sending " + devops_channel_message " + "#devops")
+                    logging.info(f"Sending message '{devops_channel_message}' to #devops")
                     send_message(client, devops_channel_id, devops_channel_message)
                 continue  # Skip the rest of the loop and move to the next iteration
             
