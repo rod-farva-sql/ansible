@@ -259,8 +259,9 @@ def main():
                     if filename == "engineering_prod.crt":
                         # Specify the link to the Confluence page
                         confluence_page_link = "https://fan360.atlassian.net/wiki/spaces/FANTHREESIXTY/pages/2604007428/Renew+OpenVPN+Server+Certificate"
-                        devops_channel_message += f" Please refer to {confluence_page_link} for renewal instructions."
+                        devops_channel_message = f" Please refer to {confluence_page_link} for renewal instructions."
                         logging.info(f"Sending message '{devops_channel_message}' to #devops")
+                        send_message(client, devops_channel_id, devops_channel_message)
                 continue  # Skip the rest of the loop and move to the next iteration
             
             # We need to check to see if the certificate expires or within our threshold to expire
