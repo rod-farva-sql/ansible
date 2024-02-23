@@ -159,6 +159,9 @@ def send_message(client, user_id, message):
     except SlackApiError as e:
         error_message = e.response['error']
         logging.exception(f"Failed to send message to user {user_id}: {error_message}")
+    finally:
+        # Adding a 1-second delay to help manage the rate of API requests
+        time.sleep(1)
 
 # Function to send a file using the Slack API
 def send_file(client, user_id, file_path, filename):
@@ -176,6 +179,9 @@ def send_file(client, user_id, file_path, filename):
     except SlackApiError as e:
         error_message = e.response['error']
         logging.exception(f"Failed to send file to user {user_id}: {error_message}")
+    finally:
+        # Adding a 1-second delay to help manage the rate of API requests
+        time.sleep(1)
 
 # Function to lookup the slack user_id from the email address
 def lookup_user_id_by_email(client, user_email):
@@ -192,6 +198,9 @@ def lookup_user_id_by_email(client, user_email):
             error_message = e.response['error']
             logging.warning(f"Failed to look up Slack user with email {user_email}: {error_message}")
             return None
+    finally:
+        # Adding a 1-second delay to help manage the rate of API requests
+        time.sleep(1)
 
 def main():
 
