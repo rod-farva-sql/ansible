@@ -17,7 +17,9 @@ warnings.filterwarnings('ignore')
 def revoke_user(username, ca_key_password):
     logging.info(f"Revoking certificate for {username}")
     revoke_process = pexpect.spawn('/etc/openvpn/EasyRSA/easyrsa revoke {}'.format(username))
-    revoke_process.expect("    Continue with revocation:")
+    #revoke_process.expect("    Continue with revocation:")
+    revoke_process.expect("Type the word 'yes' to continue, or any other input to abort.")
+    time.sleep(1)  # Delay for 1 second
     revoke_process.sendline("yes")
     revoke_process.expect("Enter pass phrase for*")
     time.sleep(1)  # Delay for 1 second
