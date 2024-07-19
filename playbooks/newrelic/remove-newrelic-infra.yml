@@ -19,6 +19,12 @@
         state: absent
         force: yes
 
+    - name: Remove New Relic Infrastructure YAML configuration file
+      ansible.builtin.file:
+        path: /etc/newrelic-infra.yml
+        state: absent
+        force: yes
+
     - name: Remove New Relic Infrastructure systemd service file
       ansible.builtin.file:
         path: /etc/systemd/system/newrelic-infra.service
