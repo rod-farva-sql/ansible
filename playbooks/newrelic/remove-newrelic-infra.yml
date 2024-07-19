@@ -30,3 +30,10 @@
         path: /etc/systemd/system/newrelic-infra.service
         state: absent
         force: yes
+        
+    - name: Remove New Relic Infrastructure log file
+      ansible.builtin.file:
+        path: /var/log/newrelic-infra.log
+        state: absent
+        force: yes
+
