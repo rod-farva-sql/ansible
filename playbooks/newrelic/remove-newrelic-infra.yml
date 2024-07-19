@@ -1,6 +1,6 @@
 ---
 - name: Remove New Relic Infrastructure Agent 
-  hosts: 10.16.30.133
+  hosts: all
   become: yes
   tasks:
     - name: Stop New Relic Infrastructure service
