@@ -24,6 +24,12 @@
         path: /etc/newrelic-infra.yml
         state: absent
         force: yes
+        
+    - name: Remove New Relic Infrastructure default log directory
+      ansible.builtin.file:
+        path: /var/log/newrelic-infra
+        state: absent
+        force: yes
 
     - name: Remove New Relic Infrastructure systemd service file
       ansible.builtin.file:
