@@ -1,0 +1,11 @@
+cluster.name: my-cluster
+node.name: {{ ansible_fqdn }}
+node.roles:
+{% for role in node_roles %}
+  - {{ role }}
+{% endfor %}
+
+network.host: 0.0.0.0
+http.port: 9200
+discovery.seed_hosts: []
+cluster.initial_master_nodes: []
