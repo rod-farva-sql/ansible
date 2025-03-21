@@ -2,7 +2,7 @@
   hosts: all
   become: true
   vars:
-    github_node_file_url: "https://raw.githubusercontent.com/your-org/your-repo/main/nodes.yml"
+    github_node_file_url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/refs/heads/main/playbooks/elasticsearch/nodes.yml"
 
   tasks:
 
