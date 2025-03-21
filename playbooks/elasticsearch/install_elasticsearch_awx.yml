@@ -19,11 +19,22 @@
         key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
         state: present
 
-    - name: Add Elasticsearch yum repo
-      get_url:
-        url: https://artifacts.elastic.co/downloads/yum/elasticsearch/elasticsearch.repo
+    - name: Create elasticsearch.repo manually
+      copy:
         dest: /etc/yum.repos.d/elasticsearch.repo
-
+        content: |
+          [elasticsearch]
+          name=Elasticsearch repository for 8.x packages
+          baseurl=https://artifacts.elastic.co/packages/8.x/yum
+          gpgcheck=1
+          gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+          enabled=1
+          autorefresh=1
+          type=rpm-md
+        owner: root
+        group: root
+        mode: '0644'
+        
     - name: Install Elasticsearch
       yum:
         name: elasticsearch
