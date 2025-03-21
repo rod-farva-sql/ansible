@@ -9,7 +9,7 @@
     - name: Ensure required packages are installed
       package:
         name:
-          - java-17-amazon-corretto
+          - java-17-openjdk
           - curl
           - wget
         state: present
