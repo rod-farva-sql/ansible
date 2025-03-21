@@ -1,0 +1,12 @@
+nodes:
+    - name: 10.16.30.139
+      roles:
+        - master
+      jvm:
+        heap_size: 2g
+    - name: 10.16.30.142
+      roles:
+        - data
+        - ingest
+        - transform
+        
