@@ -1,69 +1,75 @@
----
 - name: Install and configure Elasticsearch on Amazon Linux 2023
   hosts: all
-  become: yes
+  become: true
   vars:
-    es_version: "8.x"
-    es_cluster_name: "my-cluster"
-    es_node_name: "{{ inventory_hostname }}"
-    es_heap_size: "2g"
-    es_roles: "{{ es_role_selection.split(',') }}"  # Convert survey input into a list
-    es_network_host: "0.0.0.0"
-    es_discovery_nodes: ["node1", "node2", "node3"]  # Adjust as needed
+    github_node_file_url: "https://raw.githubusercontent.com/your-org/your-repo/main/nodes.yml"
 
   tasks:
-    - name: Install required dependencies
-      dnf:
+
+    - name: Ensure required packages are installed
+      package:
         name:
-          - dnf-plugins-core
-          - java-17-openjdk
+          - java-17-amazon-corretto
+          - curl
+          - wget
         state: present
 
-    - name: Add Elasticsearch YUM repository
-      ansible.builtin.yum_repository:
-        name: elasticsearch
-        description: Elasticsearch repository for {{ es_version }}
-        baseurl: https://artifacts.elastic.co/packages/{{ es_version }}/yum
-        gpgcheck: yes
-        gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-        enabled: yes
+    - name: Add Elasticsearch GPG key
+      rpm_key:
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+
+    - name: Add Elasticsearch yum repo
+      get_url:
+        url: https://artifacts.elastic.co/downloads/yum/elasticsearch/elasticsearch.repo
+        dest: /etc/yum.repos.d/elasticsearch.repo
 
     - name: Install Elasticsearch
-      dnf:
+      yum:
         name: elasticsearch
         state: present
 
-    - name: Configure Elasticsearch
+    - name: Download node role config from GitHub
+      get_url:
+        url: "{{ github_node_file_url }}"
+        dest: /tmp/nodes.yml
+
+    - name: Read node config YAML
+      ansible.builtin.set_fact:
+        node_config: "{{ lookup('ansible.builtin.file', '/tmp/nodes.yml') | from_yaml }}"
+
+    - name: Match node in config
+      set_fact:
+        matched_node: "{{ item }}"
+      loop: "{{ node_config.nodes }}"
+      when: item.name == ansible_fqdn
+      register: node_lookup
+
+    - name: Extract roles and heap
+      set_fact:
+        node_roles: "{{ node_lookup.results | selectattr('skipped', 'equalto', false) | map(attribute='ansible_facts.matched_node.roles') | first }}"
+        heap_size: "{{ node_lookup.results | selectattr('skipped', 'equalto', false) | map(attribute='ansible_facts.matched_node.jvm.heap_size') | first }}"
+
+    - name: Template elasticsearch.yml with correct roles
       template:
         src: elasticsearch.yml.j2
         dest: /etc/elasticsearch/elasticsearch.yml
-        owner: elasticsearch
+        owner: root
         group: elasticsearch
         mode: '0644'
-      notify: Restart Elasticsearch
 
-    - name: Set JVM heap size
-      lineinfile:
-        path: /etc/elasticsearch/jvm.options
-        regexp: '^-Xms.*'
-        line: "-Xms{{ es_heap_size }}"
-      notify: Restart Elasticsearch
+    - name: Configure JVM heap size
+      copy:
+        dest: /etc/elasticsearch/jvm.options.d/heap.options
+        content: |
+          -Xms{{ heap_size }}
+          -Xmx{{ heap_size }}
+        owner: root
+        group: elasticsearch
+        mode: '0644'
 
-    - name: Set JVM heap size
-      lineinfile:
-        path: /etc/elasticsearch/jvm.options
-        regexp: '^-Xmx.*'
-        line: "-Xmx{{ es_heap_size }}"
-      notify: Restart Elasticsearch
-
-    - name: Enable and start Elasticsearch service
+    - name: Enable and start Elasticsearch
       systemd:
         name: elasticsearch
-        enabled: yes
-        state: started
-
-  handlers:
-    - name: Restart Elasticsearch
-      systemd:
-        name: elasticsearch
+        enabled: true
         state: restarted
