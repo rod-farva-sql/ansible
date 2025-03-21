@@ -44,10 +44,10 @@
       get_url:
         url: "{{ github_node_file_url }}"
         dest: /tmp/nodes.yml
-
-    - name: Read node config YAML
-      ansible.builtin.set_fact:
-        node_config: "{{ lookup('ansible.builtin.file', '/tmp/nodes.yml') | from_yaml }}"
+    
+    - name: Load node role config from repo
+      set_fact:
+        node_config: "{{ lookup('file', 'playbooks/elasticsearch/nodes.yml') | from_yaml }}"
 
     - name: Match node in config
       set_fact:
