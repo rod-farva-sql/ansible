@@ -1,0 +1,14 @@
+# Elasticsearch Configuration
+
+cluster.name: "{{ es_cluster_name }}"
+node.name: "{{ es_node_name }}"
+network.host: "{{ es_network_host }}"
+discovery.seed_hosts: {{ es_discovery_nodes | to_json }}
+
+node.roles: {{ es_roles | to_json }}
+
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+
+xpack.security.enabled: false
+xpack.monitoring.collection.enabled: true
