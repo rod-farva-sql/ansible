@@ -35,7 +35,7 @@
         owner: root
         group: root
         mode: '0644'
-        
+
     - name: Install Elasticsearch
       yum:
         name: elasticsearch
@@ -45,17 +45,20 @@
       set_fact:
         node_config: "{{ lookup('file', node_config_file) | from_yaml }}"
 
-    - name: Match node in config
+    - name: Find matching node config
       set_fact:
-        matched_node: "{{ item }}"
-      loop: "{{ node_config.nodes }}"
-      when: item.name == ansible_fqdn
-      register: node_lookup
+        matched_node: >-
+          {{ node_config.nodes | selectattr('name', 'equalto', ansible_hostname) | list | first }}
 
-    - name: Extract roles and heap
+    - name: Fail if no matching node config was found
+      fail:
+        msg: "No matching node config found for {{ ansible_hostname }}"
+      when: matched_node is not defined
+
+    - name: Set roles and heap size
       set_fact:
-        node_roles: "{{ node_lookup.results | selectattr('skipped', 'equalto', false) | map(attribute='ansible_facts.matched_node.roles') | first }}"
-        heap_size: "{{ node_lookup.results | selectattr('skipped', 'equalto', false) | map(attribute='ansible_facts.matched_node.jvm.heap_size') | first }}"
+        node_roles: "{{ matched_node.roles }}"
+        heap_size: "{{ matched_node.jvm.heap_size }}"
 
     - name: Template elasticsearch.yml with correct roles
       template:
