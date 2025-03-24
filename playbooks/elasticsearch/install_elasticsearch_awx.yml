@@ -106,11 +106,6 @@
         - /var/log/elasticsearch
         - /var/run/elasticsearch
 
-    - name: Create systemd override for Elasticsearch (Fedora)
-      hosts: fedora_elasticsearch
-      become: yes
-      tasks:
-    
     - name: Ensure systemd override directory exists
       file:
         path: /etc/systemd/system/elasticsearch.service.d
