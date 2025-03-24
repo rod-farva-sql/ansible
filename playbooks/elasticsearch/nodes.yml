@@ -1,12 +1,12 @@
 nodes:
-    - name: eng-fedora-01
-      roles:
-        - master
-      jvm:
-        heap_size: 2g
-    - name: eng-fedora-02
-      roles:
-        - data
-        - ingest
-        - transform
-        
+  - name: eng-fedora-01
+    roles:
+      - master
+      - data
+    jvm:
+      heap_size: 2g
+  - name: eng-fedora-02
+    roles:
+      - data
+    jvm:
+      heap_size: 2g
