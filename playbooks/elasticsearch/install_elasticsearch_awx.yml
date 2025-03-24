@@ -78,13 +78,18 @@
         group: elasticsearch
         mode: '0644'
 
-    - name: Ensure /var/log/elasticsearch exists and is writable
+    - name: Ensure elasticsearch directories exist
       file:
-        path: /var/log/elasticsearch
+        path: "{{ item }}"
         state: directory
         owner: elasticsearch
         group: elasticsearch
         mode: '0755'
+      loop:
+        - /var/lib/elasticsearch
+        - /var/log/elasticsearch
+        - /var/run/elasticsearch
+
     
     - name: Enable and start Elasticsearch
       systemd:
