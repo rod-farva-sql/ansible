@@ -111,25 +111,25 @@
       become: yes
       tasks:
     
-        - name: Ensure systemd override directory exists
-          file:
-            path: /etc/systemd/system/elasticsearch.service.d
-            state: directory
-            mode: '0755'
+    - name: Ensure systemd override directory exists
+      file:
+        path: /etc/systemd/system/elasticsearch.service.d
+        state: directory
+        mode: '0755'
     
-        - name: Create override.conf for Elasticsearch service
-          copy:
-            dest: /etc/systemd/system/elasticsearch.service.d/override.conf
-            content: |
-              [Service]
-              LimitMEMLOCK=infinity
-              LimitNOFILE=infinity
-              LimitNPROC=infinity
-              Environment=DATA_DIR=/var/lib/elasticsearch
-              Environment=LOG_DIR=/var/log/elasticsearch
-              Environment=CONF_DIR=/etc/elasticsearch
-              Environment=PID_DIR=/var/run/elasticsearch
-            mode: '0644'
+    - name: Create override.conf for Elasticsearch service
+      copy:
+        dest: /etc/systemd/system/elasticsearch.service.d/override.conf
+        content: |
+          [Service]
+          LimitMEMLOCK=infinity
+          LimitNOFILE=infinity
+          LimitNPROC=infinity
+          Environment=DATA_DIR=/var/lib/elasticsearch
+          Environment=LOG_DIR=/var/log/elasticsearch
+          Environment=CONF_DIR=/etc/elasticsearch
+          Environment=PID_DIR=/var/run/elasticsearch
+        mode: '0644'
 
     - name: Reload systemd daemon
       systemd:
