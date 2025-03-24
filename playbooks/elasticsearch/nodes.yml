@@ -1,10 +1,10 @@
 nodes:
-    - name: 10.16.30.139
+    - name: eng-fedora-01
       roles:
         - master
       jvm:
         heap_size: 2g
-    - name: 10.16.30.142
+    - name: eng-fedora-02
       roles:
         - data
         - ingest
