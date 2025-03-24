@@ -36,8 +36,8 @@
         group: root
         mode: '0644'
 
-    - name: Install Elasticsearch
-      yum:
+    - name: Install a package with legacy dnf
+      ansible.builtin.dnf:
         name: elasticsearch
         state: present
 
