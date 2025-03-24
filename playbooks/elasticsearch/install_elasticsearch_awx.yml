@@ -78,6 +78,14 @@
         group: elasticsearch
         mode: '0644'
 
+    - name: Ensure /var/log/elasticsearch exists and is writable
+      file:
+        path: /var/log/elasticsearch
+        state: directory
+        owner: elasticsearch
+        group: elasticsearch
+        mode: '0755'
+    
     - name: Enable and start Elasticsearch
       systemd:
         name: elasticsearch
