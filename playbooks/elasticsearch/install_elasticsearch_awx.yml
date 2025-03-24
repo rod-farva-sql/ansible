@@ -76,6 +76,14 @@
         group: elasticsearch
         mode: '0644'
 
+    - name: Copy log4j2.properties
+      template:
+        src: log4j2.properties
+        dest: /etc/elasticsearch/log4j2.properties
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
 #    - name: Configure JVM heap size
 #      copy:
 #        dest: /etc/elasticsearch/jvm.options.d/heap.options
