@@ -1,20 +1,35 @@
+action.auto_create_index: false
+bootstrap.memory_lock: true
 cluster.name: my-cluster
-node.name: {{ ansible_fqdn }}
+discovery.seed_hosts:
+  - eng-fedora-01.meow.com
+  - eng-fedora-02.meow.com
+http.cors.allow-methods: "OPTIONS,GET"
+http.cors.allow-origin: "*"
+http.cors.enabled: false
+http.port: 9999
+indices.query.bool.max_nested_depth: 75
+network.host: 0.0.0.0
 node.roles:
 {% for role in node_roles %}
   - {{ role }}
 {% endfor %}
-
-network.host: 0.0.0.0
-http.port: 9200
-discovery.seed_hosts: []
-cluster.initial_master_nodes: []
-
+node.name: {{ ansible_fqdn }}
 path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
+#xpack.ml.enabled: false
+#xpack.watcher.enabled: false
+cluster.initial_master_nodes: [eng-fedora-01]
+reindex.remote.whitelist: "produsa-elasticsearch.meow.com:443"
+search.max_open_scroll_context: 10000
+#commented these out from the real config...
+#xpack.security.enabled: true
+#xpack.security.transport.ssl.enabled: true
+#xpack.security.transport.ssl.verification_mode: certificate
+#xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+#xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
 
 #had to add the following to get es to start
 xpack.security.transport.ssl.enabled: false
 xpack.security.http.ssl.enabled: false
 xpack.security.enabled: false
-
