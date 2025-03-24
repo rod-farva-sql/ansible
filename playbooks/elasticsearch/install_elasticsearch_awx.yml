@@ -2,7 +2,8 @@
   hosts: all
   become: true
   vars:
-    github_node_file_url: "https://raw.githubusercontent.com/rod-farva-sql/ansible/refs/heads/main/playbooks/elasticsearch/nodes.yml"
+    # Make sure nodes.yml is in the same directory as this playbook in your Git repo
+    node_config_file: "./nodes.yml"
 
   tasks:
 
@@ -40,14 +41,9 @@
         name: elasticsearch
         state: present
 
-    - name: Download node role config from GitHub
-      get_url:
-        url: "{{ github_node_file_url }}"
-        dest: /tmp/nodes.yml
-    
     - name: Load node role config from repo
       set_fact:
-        node_config: "{{ lookup('file', 'playbooks/elasticsearch/nodes.yml') | from_yaml }}"
+        node_config: "{{ lookup('file', node_config_file) | from_yaml }}"
 
     - name: Match node in config
       set_fact:
