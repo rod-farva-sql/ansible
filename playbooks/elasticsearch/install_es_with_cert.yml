@@ -1,0 +1,137 @@
+- name: Install and configure Elasticsearch on Amazon Linux 2023
+  hosts: all
+  become: true
+  vars:
+    # Make sure nodes.yml is in the same directory as this playbook in your Git repo
+    node_config_file: "./nodes.yml"
+
+  tasks:
+
+    - name: Ensure required packages are installed
+      package:
+        name:
+          - java-17-openjdk
+          - curl
+          - wget
+        state: present
+
+    - name: Add Elasticsearch GPG key
+      rpm_key:
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+
+    - name: Create elasticsearch.repo manually
+      copy:
+        dest: /etc/yum.repos.d/elasticsearch.repo
+        content: |
+          [elasticsearch]
+          name=Elasticsearch repository for 8.x packages
+          baseurl=https://artifacts.elastic.co/packages/8.x/yum
+          gpgcheck=1
+          gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+          enabled=1
+          autorefresh=1
+          type=rpm-md
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Install a package with legacy dnf
+      ansible.builtin.dnf:
+        name: elasticsearch
+        state: present
+
+    - name: Load node role config from repo
+      set_fact:
+        node_config: "{{ lookup('file', node_config_file) | from_yaml }}"
+
+    - name: Find matching node config
+      set_fact:
+        matched_node: >-
+          {{ node_config.nodes | selectattr('name', 'equalto', ansible_hostname) | list | first }}
+
+    - name: Fail if no matching node config was found
+      fail:
+        msg: "No matching node config found for {{ ansible_hostname }}"
+      when: matched_node is not defined
+
+    - name: Set roles and heap size
+      set_fact:
+        node_roles: "{{ matched_node.roles }}"
+        heap_size: "{{ matched_node.jvm.heap_size }}"
+
+    - name: Template elasticsearch.yml with correct roles
+      template:
+        src: elasticsearch.yml.j2
+        dest: /etc/elasticsearch/elasticsearch.yml
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
+    - name: Copy jvm.options 
+      template:
+        src: jvm.options
+        dest: /etc/elasticsearch/jvm.options
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
+    - name: Copy log4j2.properties
+      template:
+        src: log4j2.properties
+        dest: /etc/elasticsearch/log4j2.properties
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
+#    - name: Configure JVM heap size
+#      copy:
+#        dest: /etc/elasticsearch/jvm.options.d/heap.options
+#        content: |
+#          -Xms{{ heap_size }}
+#          -Xmx{{ heap_size }}
+#        owner: root
+#        group: elasticsearch
+#        mode: '0644'
+
+    - name: Ensure elasticsearch directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: elasticsearch
+        group: elasticsearch
+        mode: '0755'
+      loop:
+        - /var/lib/elasticsearch
+        - /var/log/elasticsearch
+        - /var/run/elasticsearch
+
+    - name: Ensure systemd override directory exists
+      file:
+        path: /etc/systemd/system/elasticsearch.service.d
+        state: directory
+        mode: '0755'
+    
+    - name: Create override.conf for Elasticsearch service
+      copy:
+        dest: /etc/systemd/system/elasticsearch.service.d/override.conf
+        content: |
+          [Service]
+          LimitMEMLOCK=infinity
+          LimitNOFILE=infinity
+          LimitNPROC=infinity
+          Environment=DATA_DIR=/var/lib/elasticsearch
+          Environment=LOG_DIR=/var/log/elasticsearch
+          Environment=CONF_DIR=/etc/elasticsearch
+          Environment=PID_DIR=/var/run/elasticsearch
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+    
+    - name: Enable and start Elasticsearch
+      systemd:
+        name: elasticsearch
+        enabled: true
+        state: restarted
