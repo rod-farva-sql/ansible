@@ -4,6 +4,9 @@
   vars:
     # Make sure nodes.yml is in the same directory as this playbook in your Git repo
     node_config_file: "./nodes.yml"
+    vault_username: "{{ lookup('env', 'VAULT_USERNAME') }}"
+    vault_password: "{{ lookup('env', 'VAULT_PASSWORD') }}"
+    vault_cert_path: "secret/eng/elasticsearch/certificates"
 
   tasks:
 
@@ -125,6 +128,66 @@
           Environment=CONF_DIR=/etc/elasticsearch
           Environment=PID_DIR=/var/run/elasticsearch
         mode: '0644'
+
+    - name: Authenticate with Vault using UserPass
+      uri:
+        url: "http://192.168.1.85:8200/v1/auth/userpass/login/{{ vault_username }}"
+        method: POST
+        body_format: json
+        body:
+          password: "{{ vault_password }}"
+        headers:
+          Content-Type: "application/json"
+      register: vault_auth_response
+      no_log: true
+
+    - name: Store Vault token
+      set_fact:
+        vault_token: "{{ vault_auth_response.json.auth.client_token }}"
+
+    - name: Retrieve base64-encoded .p12 from Vault
+      uri:
+        url: "http://192.168.1.85:8200/v1/{{ vault_cert_path }}"
+        method: GET
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+      register: retrieved_cert
+
+    - name: Ensure destination directory exists
+      file:
+        path: /etc/elasticsearch
+        state: directory
+        owner: root
+        group: elasticsearch
+        mode: '0775'
+
+    - name: Decode and write .p12 file to /etc/elasticsearch/
+      copy:
+        content: "{{ retrieved_cert.json.data.p12 | b64decode }}"
+        dest: /etc/elasticsearch/elastic-certificates.p12
+        owner: elasticsearch
+        group: elasticsearch
+        mode: '0640'
+      when: retrieved_cert.json.data.p12 is defined
+
+    - name: Delete elasticsearch keystore so it can be regenerated automatically after service restarts 
+      file:
+        path: /etc/elasticsearch/elasticsearch.keystore
+        state: absent
+
+    - name: Create elasticsearch keystore if it doesn't exist
+      command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
+      args:
+        creates: /etc/elasticsearch/elasticsearch.keystore
+      become: true
+      become_user: elasticsearch
+
+    - name: Lock down /etc/elasticsearch after keystore setup
+      file:
+        path: /etc/elasticsearch
+        owner: root
+        group: elasticsearch
+        mode: '0755'
 
     - name: Reload systemd daemon
       systemd:
