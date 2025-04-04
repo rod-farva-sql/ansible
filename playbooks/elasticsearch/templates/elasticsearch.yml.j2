@@ -22,14 +22,15 @@ path.logs: /var/log/elasticsearch
 cluster.initial_master_nodes: [eng-fedora-01]
 reindex.remote.whitelist: "produsa-elasticsearch.meow.com:443"
 search.max_open_scroll_context: 10000
-#commented these out from the real config...
-#xpack.security.enabled: true
-#xpack.security.transport.ssl.enabled: true
-#xpack.security.transport.ssl.verification_mode: certificate
-#xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
-#xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
 
-#had to add the following to get es to start
-xpack.security.transport.ssl.enabled: false
-xpack.security.http.ssl.enabled: false
-xpack.security.enabled: false
+#enable security/encryption
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
+
+### if you want to test without certs/encryption commment out the 5 lines above and add the following to get es to start
+#xpack.security.transport.ssl.enabled: false
+#xpack.security.http.ssl.enabled: false
+#xpack.security.enabled: false
