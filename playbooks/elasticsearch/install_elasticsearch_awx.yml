@@ -6,6 +6,7 @@
     node_config_file: "./nodes.yml"
     vault_username: "{{ lookup('env', 'VAULT_USERNAME') }}"
     vault_password: "{{ lookup('env', 'VAULT_PASSWORD') }}"
+    vault_cert_map: ""
     vault_cert_path: ""
 
   pre_tasks:
