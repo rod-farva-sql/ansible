@@ -13,13 +13,13 @@
       set_fact:
         vault_cert_path: >-
           {% if env == 'dev' %}
-            secret/services/dev/elasticsearch/ssl/cluster
+          secret/services/dev/elasticsearch/ssl/cluster
           {% elif env == 'qa' %}
-            secret/services/qa/elasticsearch/ssl/cluster
+          secret/services/qa/elasticsearch/ssl/cluster
           {% elif env == 'produsa' %}
-            secret/services/produsa/elasticsearch/ssl/cluster
+          secret/services/produsa/elasticsearch/ssl/cluster
           {% else %}
-            secret/eng/elasticsearch/certificates
+          secret/eng/elasticsearch/certificates
           {% endif %}
 
 
