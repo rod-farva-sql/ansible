@@ -9,19 +9,13 @@
     vault_cert_path: ""
 
   pre_tasks:
-    - name: Set vault_cert_path based on environment
+    - name: Set vault_cert_path from environment map
       set_fact:
-        vault_cert_path: >-
-          {% if env == 'dev' %}
-          secret/services/dev/elasticsearch/ssl/cluster
-          {% elif env == 'qa' %}
-          secret/services/qa/elasticsearch/ssl/cluster
-          {% elif env == 'produsa' %}
-          secret/services/produsa/elasticsearch/ssl/cluster
-          {% else %}
-          secret/eng/elasticsearch/certificates
-          {% endif %}
-
+        vault_cert_map:
+          dev: "secret/services/dev/elasticsearch/ssl/cluster"
+          qa: "secret/services/qa/elasticsearch/ssl/cluster"
+          produsa: "secret/services/produsa/elasticsearch/ssl/cluster"
+        vault_cert_path: "{{ vault_cert_map[env] }}"
 
   tasks:
 
