@@ -10,12 +10,20 @@
     vault_cert_path: ""
 
   pre_tasks:
-    - name: Set vault_cert_path from environment map
+    - name: Define vault_cert_map
       set_fact:
         vault_cert_map:
           dev: "secret/services/dev/elasticsearch/ssl/cluster"
           qa: "secret/services/qa/elasticsearch/ssl/cluster"
           produsa: "secret/services/produsa/elasticsearch/ssl/cluster"
+
+    - name: Fail if env is not valid
+      fail:
+        msg: "Invalid environment selected: {{ env }}"
+      when: env not in vault_cert_map
+
+    - name: Set vault_cert_path from environment map
+      set_fact:
         vault_cert_path: "{{ vault_cert_map[env] }}"
 
   tasks:
