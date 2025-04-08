@@ -6,7 +6,22 @@
     node_config_file: "./nodes.yml"
     vault_username: "{{ lookup('env', 'VAULT_USERNAME') }}"
     vault_password: "{{ lookup('env', 'VAULT_PASSWORD') }}"
-    vault_cert_path: "secret/eng/elasticsearch/certificates"
+    vault_cert_path: ""
+
+  pre_tasks:
+    - name: Set vault_cert_path based on environment
+      set_fact:
+        vault_cert_path: >-
+          {% if env == 'dev' %}
+            secret/services/dev/elasticsearch/ssl/cluster
+          {% elif env == 'qa' %}
+            secret/services/qa/elasticsearch/ssl/cluster
+          {% elif env == 'produsa' %}
+            secret/services/produsa/elasticsearch/ssl/cluster
+          {% else %}
+            secret/eng/elasticsearch/certificates
+          {% endif %}
+
 
   tasks:
 
