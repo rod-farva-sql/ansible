@@ -74,7 +74,17 @@
       set_fact:
         cluster_intial_master_nodes: "{{ cluster_intial_master_nodes_map[env] }}"
 
-        
+
+    - name: Define action_auto_create_index_map
+      set_fact:
+        action_auto_create_index_map:
+          dev: "true"
+          qa: "true"
+          produsa: "false"
+
+    - name: Set action_auto_create_index based on env
+      set_fact:
+        action_auto_create_index: "{{ action_auto_create_index_map[env] }}"        
 
   tasks:
 
