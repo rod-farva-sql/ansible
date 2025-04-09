@@ -1,6 +1,9 @@
 action.auto_create_index: false
 bootstrap.memory_lock: true
-cluster.name: my-cluster
+cluster.name:
+{% for name in cluster_name %}
+  - {{ name }}
+{% endfor %}
 discovery.seed_hosts:
 {% for host in discovery_seed_hosts %}
   - {{ host }}
