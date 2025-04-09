@@ -40,17 +40,12 @@
       set_fact:
         discovery_seed_hosts: "{{ discovery_seed_hosts_map[env] }}"
 
-
-
     - name: Define cluster_name_map
       set_fact:
-        culster_name_map:
-          dev:
-            dev-cluster
-          qa:
-            qa-cluster
-          produsa:
-            produsa-cluster
+        cluster_name_map:
+          dev: "dev-cluster"
+          qa: "qa-cluster"
+          produsa: "produsa-cluster"
 
     - name: Set cluster_name based on env
       set_fact:
@@ -60,12 +55,9 @@
     - name: Define reindex_remote_whitelist_map
       set_fact:
         reindex_remote_whitelist_map:
-          dev:
-            eng-fedora-01.meow.com
-          qa:
-            eng-fedora-01.meow.com
-          produsa:
-            eng-fedora-01.meow.com
+          dev: "eng-fedora-01.meow.com:443"
+          qa: "eng-fedora-01.meow.com:443"
+          produsa: "eng-fedora-01.meow.com:443"
 
     - name: Set reindex_remote_whitelist based on env
       set_fact:
