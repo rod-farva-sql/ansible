@@ -31,17 +31,33 @@
         discovery_seed_hosts_map:
           dev:
             - eng-fedora-01.meow.com
-            - eng-fedora-01.meow.com
           qa:
-            - eng-fedora-01.meow.com
             - eng-fedora-01.meow.com
           produsa:
             - eng-fedora-01.meow.com
-            - eng-fedora-02.meow.com
 
     - name: Set discovery_seed_hosts based on env
       set_fact:
         discovery_seed_hosts: "{{ discovery_seed_hosts_map[env] }}"
+
+
+
+    - name: Define cluster_name_map
+      set_fact:
+        culster_name_map:
+          dev:
+            dev-cluster
+          qa:
+            qa-cluster
+          produsa:
+            produsa-cluster
+
+    - name: Set cluster_name based on env
+      set_fact:
+        cluster_name: "{{ cluster_name_map[env] }}"
+
+
+        
 
   tasks:
 
