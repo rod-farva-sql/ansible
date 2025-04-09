@@ -57,6 +57,19 @@
         cluster_name: "{{ cluster_name_map[env] }}"
 
 
+    - name: Define reindex_remote_whitelist_map
+      set_fact:
+        reindex_remote_whitelist_map:
+          dev:
+            eng-fedora-01.meow.com
+          qa:
+            eng-fedora-01.meow.com
+          produsa:
+            eng-fedora-01.meow.com
+
+    - name: Set reindex_remote_whitelist based on env
+      set_fact:
+        reindex_remote_whitelist: "{{ reindex_remote_whitelist_map[env] }}"
         
 
   tasks:
