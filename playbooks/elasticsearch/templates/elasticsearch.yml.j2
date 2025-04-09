@@ -2,8 +2,9 @@ action.auto_create_index: false
 bootstrap.memory_lock: true
 cluster.name: my-cluster
 discovery.seed_hosts:
-  - eng-fedora-01.meow.com
-  - eng-fedora-02.meow.com
+{% for host in discovery_seed_hosts %}
+  - {{ host }}
+{% endfor %}
 http.cors.allow-methods: "OPTIONS,GET"
 http.cors.allow-origin: "*"
 http.cors.enabled: false
