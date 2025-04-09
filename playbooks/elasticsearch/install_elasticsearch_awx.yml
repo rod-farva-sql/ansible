@@ -62,6 +62,18 @@
     - name: Set reindex_remote_whitelist based on env
       set_fact:
         reindex_remote_whitelist: "{{ reindex_remote_whitelist_map[env] }}"
+
+    - name: Define cluster_intial_master_nodes_map
+      set_fact:
+        cluster_intial_master_nodes_map:
+          dev: "eng-fedora-01"
+          qa: "eng-fedora-01"
+          produsa: "eng-fedora-01"
+
+    - name: Set cluster_intial_master_nodes based on env
+      set_fact:
+        cluster_intial_master_nodes: "{{ cluster_intial_master_nodes_map[env] }}"
+
         
 
   tasks:
