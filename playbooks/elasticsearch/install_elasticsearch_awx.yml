@@ -26,6 +26,23 @@
       set_fact:
         vault_cert_path: "{{ vault_cert_map[env] }}"
 
+    - name: Define discovery_seed_hosts_map
+      set_fact:
+        discovery_seed_hosts_map:
+          dev:
+            - eng-fedora-01.meow.com
+            - eng-fedora-01.meow.com
+          qa:
+            - eng-fedora-01.meow.com
+            - eng-fedora-01.meow.com
+          produsa:
+            - eng-fedora-01.meow.com
+            - eng-fedora-02.meow.com
+
+    - name: Set discovery_seed_hosts based on env
+      set_fact:
+        discovery_seed_hosts: "{{ discovery_seed_hosts_map[env] }}"
+
   tasks:
 
     - name: Ensure required packages are installed
