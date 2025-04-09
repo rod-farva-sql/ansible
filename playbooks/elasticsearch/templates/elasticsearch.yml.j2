@@ -1,9 +1,6 @@
-action.auto_create_index: false
+action.auto_create_index: {{ action_auto_create_index }}
 bootstrap.memory_lock: true
-cluster.name:
-{% for name in cluster_name %}
-  - {{ name }}
-{% endfor %}
+cluster.name: {{ cluster_name }}
 discovery.seed_hosts:
 {% for host in discovery_seed_hosts %}
   - {{ host }}
@@ -23,11 +20,8 @@ path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
 #xpack.ml.enabled: false
 #xpack.watcher.enabled: false
-cluster.initial_master_nodes: [eng-fedora-01]
-reindex.remote.whitelist:
-{% for node in reindex_remote_whitelist %}
-  - {{ node }}
-{% endfor %}
+cluster.initial_master_nodes: {{ cluster_intial_master_nodes }}
+reindex.remote.whitelist: {{ reindex_remote_whitelist }}
 search.max_open_scroll_context: 10000
 
 #enable security/encryption
