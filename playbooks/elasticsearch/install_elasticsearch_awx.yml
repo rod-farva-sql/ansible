@@ -149,9 +149,9 @@
         group: elasticsearch
         mode: '0644'
 
-    - name: Copy jvm.options 
+    - name: Template jvm.options with dynamic heap size
       template:
-        src: jvm.options
+        src: jvm.options.j2
         dest: /etc/elasticsearch/jvm.options
         owner: root
         group: elasticsearch
@@ -165,15 +165,10 @@
         group: elasticsearch
         mode: '0644'
 
-    - name: Configure JVM heap size
-      copy:
-        dest: /etc/elasticsearch/jvm.options.d/heap.options
-        content: |
-          -Xms{{ heap_size }}
-          -Xmx{{ heap_size }}
-        owner: root
-        group: elasticsearch
-        mode: '0644'
+    - name: Ensure no conflicting heap.options file exists
+      file:
+        path: /etc/elasticsearch/jvm.options.d/heap.options
+        state: absent
 
     - name: Ensure elasticsearch directories exist
       file:
