@@ -9,4 +9,4 @@ nodes:
     roles:
       - data
     jvm:
-      heap_size: 2g
+      heap_size: 3g
