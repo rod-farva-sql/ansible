@@ -165,15 +165,15 @@
         group: elasticsearch
         mode: '0644'
 
-#    - name: Configure JVM heap size
-#      copy:
-#        dest: /etc/elasticsearch/jvm.options.d/heap.options
-#        content: |
-#          -Xms{{ heap_size }}
-#          -Xmx{{ heap_size }}
-#        owner: root
-#        group: elasticsearch
-#        mode: '0644'
+    - name: Configure JVM heap size
+      copy:
+        dest: /etc/elasticsearch/jvm.options.d/heap.options
+        content: |
+          -Xms{{ heap_size }}
+          -Xmx{{ heap_size }}
+        owner: root
+        group: elasticsearch
+        mode: '0644'
 
     - name: Ensure elasticsearch directories exist
       file:
