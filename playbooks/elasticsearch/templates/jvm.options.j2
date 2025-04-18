@@ -1,6 +1,6 @@
-#changed the following two lines from 30G to 3G for vm testing purposes
--Xms3G
--Xmx3G
+# Elasticsearch JVM options - managed by Ansible
+-Xms{{ node.jvm.heap_size }}
+-Xmx{{ node.jvm.heap_size }}
 
 -XX:+UseG1GC
 -XX:+AlwaysPreTouch
@@ -19,3 +19,4 @@
 -Dlog4j.skipJansi=true
 -XX:+HeapDumpOnOutOfMemoryError
 -XX:HeapDumpPath=/var/lib/elasticsearch/hprof
+
