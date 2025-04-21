@@ -1,0 +1,66 @@
+- name: Upgrade Elasticsearch to latest 8.x version
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Update Elasticsearch repo to 8.x
+      copy:
+        dest: /etc/yum.repos.d/elasticsearch.repo
+        content: |
+          [elasticsearch]
+          name=Elasticsearch repository for 8.x packages
+          baseurl=https://artifacts.elastic.co/packages/8.x/yum
+          gpgcheck=1
+          gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+          enabled=1
+          autorefresh=1
+          type=rpm-md
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Import Elastic GPG key
+      rpm_key:
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+
+    - name: Clean yum metadata
+      command: yum clean all
+      args:
+        warn: false
+
+    - name: Rebuild yum cache
+      command: yum makecache fast
+      args:
+        warn: false
+
+    - name: Check current Elasticsearch version
+      shell: rpm -q elasticsearch
+      register: current_version
+      changed_when: false
+
+    - name: Show current version
+      debug:
+        msg: "Currently installed: {{ current_version.stdout }}"
+
+    - name: Upgrade Elasticsearch to latest 8.x
+      ansible.builtin.yum:
+        name: elasticsearch
+        state: latest
+      register: upgrade_result
+
+    - name: Restart Elasticsearch if upgraded
+      systemd:
+        name: elasticsearch
+        state: restarted
+        enabled: true
+      when: upgrade_result.changed
+
+    - name: Show new version
+      shell: rpm -q elasticsearch
+      register: new_version
+      changed_when: false
+
+    - name: Confirm upgraded version
+      debug:
+        msg: "Elasticsearch upgraded to: {{ new_version.stdout }}"
