@@ -91,9 +91,9 @@
     - name: Ensure required packages are installed
       package:
         name:
-          - java-17-openjdk
-          - curl
-          - wget
+          - java-17-amazon-corretto
+          #- curl
+          #- wget
         state: present
 
     - name: Add Elasticsearch GPG key
