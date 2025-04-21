@@ -26,13 +26,10 @@
 
     - name: Clean yum metadata
       command: yum clean all
-      args:
-        warn: false
-
+    
     - name: Rebuild yum cache
       command: yum makecache fast
-      args:
-        warn: false
+    
 
     - name: Check current Elasticsearch version
       shell: rpm -q elasticsearch
