@@ -204,7 +204,7 @@
 
     - name: Authenticate with Vault using UserPass
       uri:
-        url: "http://192.168.1.85:8200/v1/auth/userpass/login/{{ vault_username }}"
+        url: "http://10.16.30.172:8200/v1/auth/userpass/login/{{ vault_username }}"
         method: POST
         body_format: json
         body:
@@ -220,7 +220,7 @@
 
     - name: Retrieve base64-encoded .p12 from Vault
       uri:
-        url: "http://192.168.1.85:8200/v1/{{ vault_cert_path }}"
+        url: "http://10.16.30.172:8200/v1/{{ vault_cert_path }}"
         method: GET
         headers:
           X-Vault-Token: "{{ vault_token }}"
