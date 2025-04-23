@@ -28,8 +28,7 @@
       command: yum clean all
     
     - name: Rebuild yum cache
-      command: yum makecache fast
-    
+      command: yum makecache
 
     - name: Check current Elasticsearch version
       shell: rpm -q elasticsearch
