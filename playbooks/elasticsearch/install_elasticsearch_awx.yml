@@ -119,7 +119,7 @@
 
     - name: Install a package with legacy dnf
       ansible.builtin.dnf:
-        name: elasticsearch
+        name: elasticsearch-8.13.4-1
         state: present
 
     - name: Load node role config from repo
