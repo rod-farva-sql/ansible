@@ -1,0 +1,281 @@
+- name: Install and configure Elasticsearch on Amazon Linux 2023
+  hosts: all
+  become: true
+
+  pre_tasks:
+
+    - name: Define vault_cert_map
+      set_fact:
+        vault_cert_map:
+          dev: "secret/services/dev/elasticsearch/ssl/cluster"
+          qa: "secret/services/qa/elasticsearch/ssl/cluster"
+          produsa: "secret/services/produsa/elasticsearch/ssl/cluster"
+
+  tasks:
+
+    - name: Ensure required packages are installed
+      package:
+        name:
+          - java-17-amazon-corretto
+        state: present
+
+    - name: Add Elasticsearch GPG key
+      rpm_key:
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+
+    - name: Create elasticsearch.repo manually
+      copy:
+        dest: /etc/yum.repos.d/elasticsearch.repo
+        content: |
+          [elasticsearch]
+          name=Elasticsearch repository for 8.x packages
+          baseurl=https://artifacts.elastic.co/packages/8.x/yum
+          gpgcheck=1
+          gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+          enabled=1
+          autorefresh=1
+          type=rpm-md
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Install Elasticsearch
+      ansible.builtin.dnf:
+        name: elasticsearch-8.13.4-1
+        state: present
+
+    - name: Gather EC2 metadata
+      amazon.aws.ec2_metadata_facts:
+
+    - name: Set instance_id
+      set_fact:
+        instance_id: "{{ ansible_ec2_instance_id }}"
+
+    - name: Gather EC2 instance info
+      amazon.aws.ec2_instance_info:
+        region: "us-west-2"
+        filters:
+          instance-id: "{{ instance_id }}"
+      register: ec2_info
+
+    - name: Fail if no EC2 instance info was returned
+      fail:
+        msg: "Failed to retrieve EC2 instance info"
+      when: ec2_info.instances | length == 0
+
+    - name: Pull environment and role tags
+      set_fact:
+        env: "{{ ec2_info.instances[0].tags['Environment'] | lower }}"
+        node_roles: "{{ ec2_info.instances[0].tags['Elasticsearch-role'] | lower | split(',') }}"
+
+    - name: Fail if 'Environment' or 'Elasticsearch-role' tags are missing
+      fail:
+        msg: "Missing required EC2 tags for instance {{ instance_id }}"
+      when: env is not defined or node_roles is not defined
+
+    - name: Define heap size based on environment
+      set_fact:
+        heap_size_map:
+          dev: "4g"
+          qa: "8g"
+          produsa: "30g"
+
+    - name: Fail if invalid environment is set
+      fail:
+        msg: "Invalid environment tag value '{{ env }}'"
+      when: env not in heap_size_map
+
+    - name: Set heap_size based on env
+      set_fact:
+        heap_size: "{{ heap_size_map[env] }}"
+
+    - name: Define vault_cert_path from environment map
+      set_fact:
+        vault_cert_path: "{{ vault_cert_map[env] }}"
+
+    - name: Define discovery_seed_hosts_map
+      set_fact:
+        discovery_seed_hosts_map:
+          dev: ["eng-fedora-01.meow.com"]
+          qa: ["eng-fedora-01.meow.com"]
+          produsa: ["eng-fedora-01.meow.com"]
+
+    - name: Set discovery_seed_hosts based on env
+      set_fact:
+        discovery_seed_hosts: "{{ discovery_seed_hosts_map[env] }}"
+
+    - name: Define cluster_name_map
+      set_fact:
+        cluster_name_map:
+          dev: "dev-cluster"
+          qa: "qa-cluster"
+          produsa: "produsa-cluster"
+
+    - name: Set cluster_name based on env
+      set_fact:
+        cluster_name: "{{ cluster_name_map[env] }}"
+
+    - name: Define reindex_remote_whitelist_map
+      set_fact:
+        reindex_remote_whitelist_map:
+          dev: "eng-fedora-01.meow.com:443"
+          qa: "eng-fedora-01.meow.com:443"
+          produsa: "eng-fedora-01.meow.com:443"
+
+    - name: Set reindex_remote_whitelist based on env
+      set_fact:
+        reindex_remote_whitelist: "{{ reindex_remote_whitelist_map[env] }}"
+
+    - name: Define cluster_initial_master_nodes_map
+      set_fact:
+        cluster_initial_master_nodes_map:
+          dev: "eng-fedora-01"
+          qa: "eng-fedora-01"
+          produsa: "eng-fedora-01"
+
+    - name: Set cluster_initial_master_nodes based on env
+      set_fact:
+        cluster_initial_master_nodes: "{{ cluster_initial_master_nodes_map[env] }}"
+
+    - name: Define action_auto_create_index_map
+      set_fact:
+        action_auto_create_index_map:
+          dev: "true"
+          qa: "true"
+          produsa: "false"
+
+    - name: Set action_auto_create_index based on env
+      set_fact:
+        action_auto_create_index: "{{ action_auto_create_index_map[env] }}"
+
+    - name: Template elasticsearch.yml with correct roles
+      template:
+        src: elasticsearch_tags.yml.j2
+        dest: /etc/elasticsearch/elasticsearch.yml
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
+    - name: Template jvm.options with dynamic heap size
+      template:
+        src: jvm.options_tags.j2
+        dest: /etc/elasticsearch/jvm.options
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
+    - name: Copy log4j2.properties
+      template:
+        src: log4j2_tags.properties
+        dest: /etc/elasticsearch/log4j2.properties
+        owner: root
+        group: elasticsearch
+        mode: '0644'
+
+    - name: Ensure no conflicting heap.options file exists
+      file:
+        path: /etc/elasticsearch/jvm.options.d/heap.options
+        state: absent
+
+    - name: Ensure elasticsearch directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: elasticsearch
+        group: elasticsearch
+        mode: '0755'
+      loop:
+        - /var/lib/elasticsearch
+        - /var/log/elasticsearch
+        - /var/run/elasticsearch
+
+    - name: Ensure systemd override directory exists
+      file:
+        path: /etc/systemd/system/elasticsearch.service.d
+        state: directory
+        mode: '0755'
+
+    - name: Create override.conf for Elasticsearch service
+      copy:
+        dest: /etc/systemd/system/elasticsearch.service.d/override.conf
+        content: |
+          [Service]
+          LimitMEMLOCK=infinity
+          LimitNOFILE=infinity
+          LimitNPROC=infinity
+          Environment=DATA_DIR=/var/lib/elasticsearch
+          Environment=LOG_DIR=/var/log/elasticsearch
+          Environment=CONF_DIR=/etc/elasticsearch
+          Environment=PID_DIR=/var/run/elasticsearch
+        mode: '0644'
+
+    - name: Authenticate with Vault using UserPass
+      uri:
+        url: "http://192.168.250.11:8200/v1/auth/userpass/login/{{ lookup('env', 'VAULT_USERNAME') }}"
+        method: POST
+        body_format: json
+        body:
+          password: "{{ lookup('env', 'VAULT_PASSWORD') }}"
+        headers:
+          Content-Type: "application/json"
+      register: vault_auth_response
+      no_log: true
+
+    - name: Store Vault token
+      set_fact:
+        vault_token: "{{ vault_auth_response.json.auth.client_token }}"
+
+    - name: Retrieve base64-encoded .p12 from Vault
+      uri:
+        url: "http://192.168.250.11:8200/v1/{{ vault_cert_path }}"
+        method: GET
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+      register: retrieved_cert
+
+    - name: Ensure destination directory exists
+      file:
+        path: /etc/elasticsearch
+        state: directory
+        owner: root
+        group: elasticsearch
+        mode: '0775'
+
+    - name: Decode and write .p12 file to /etc/elasticsearch/
+      copy:
+        content: "{{ retrieved_cert.json.data.p12 | b64decode }}"
+        dest: /etc/elasticsearch/elastic-certificates.p12
+        owner: elasticsearch
+        group: elasticsearch
+        mode: '0640'
+      when: retrieved_cert.json.data.p12 is defined
+
+    - name: Delete elasticsearch keystore so it can be regenerated
+      file:
+        path: /etc/elasticsearch/elasticsearch.keystore
+        state: absent
+
+    - name: Create elasticsearch keystore if it doesn't exist
+      command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
+      args:
+        creates: /etc/elasticsearch/elasticsearch.keystore
+      become: true
+      become_user: elasticsearch
+
+    - name: Lock down /etc/elasticsearch after keystore setup
+      file:
+        path: /etc/elasticsearch
+        owner: root
+        group: elasticsearch
+        mode: '0755'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Elasticsearch
+      systemd:
+        name: elasticsearch
+        enabled: true
+        state: restarted
