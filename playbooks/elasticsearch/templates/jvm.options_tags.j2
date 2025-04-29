@@ -1,0 +1,13 @@
+## JVM configuration for Elasticsearch
+-Xms{{ heap_size }}
+-Xmx{{ heap_size }}
+
+## Some default JVM settings (you can keep these if desired)
+-XX:+UseG1GC
+-XX:G1ReservePercent=25
+-XX:InitiatingHeapOccupancyPercent=30
+-XX:+AlwaysPreTouch
+-Djava.io.tmpdir=${ES_TMPDIR}
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=/var/lib/elasticsearch
+-XX:ErrorFile=/var/log/elasticsearch/hs_err_pid%p.log
