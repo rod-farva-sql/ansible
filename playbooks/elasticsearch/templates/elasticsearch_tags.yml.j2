@@ -1,0 +1,16 @@
+cluster.name: {{ cluster_name }}
+node.name: {{ ansible_hostname }}
+node.roles: {{ node_roles }}
+network.host: 0.0.0.0
+discovery.seed_hosts: {{ discovery_seed_hosts }}
+cluster.initial_master_nodes: [ "{{ cluster_initial_master_nodes }}" ]
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
+action.auto_create_index: {{ action_auto_create_index }}
+reindex.remote.whitelist: {{ reindex_remote_whitelist }}
+http.port: 9200
