@@ -1,0 +1,9 @@
+---
+- name: Echo hostname of each server
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Print the hostname
+      debug:
+        msg: "Hostname is {{ ansible_hostname }}"
